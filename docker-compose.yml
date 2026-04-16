@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: iuce-postgres
+    environment:
+      POSTGRES_USER: iuce
+      POSTGRES_PASSWORD: iuce2024
+      POSTGRES_DB: iuce_reservas
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
