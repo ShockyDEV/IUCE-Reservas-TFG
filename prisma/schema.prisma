@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelos iniciales del Sprint 0 — se ampliarán en sprints siguientes
+// con Reservation, BlockedSlot, Account/Session (NextAuth), etc.
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+model Space {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  description String?
+  capacity    Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+}
