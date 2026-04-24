@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 
 export default function HomePage() {
@@ -13,7 +14,12 @@ export default function HomePage() {
             className="h-14 w-auto"
             priority
           />
-          <span className="text-sm text-gray-500">Sistema de Reservas</span>
+          <Link
+            href="/auth/signin"
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            Iniciar sesión
+          </Link>
         </div>
       </header>
 
@@ -48,9 +54,12 @@ export default function HomePage() {
           </div>
 
           <div className="mt-14">
-            <p className="text-sm text-gray-400">
-              Próximamente: inicio de sesión y reservas.
-            </p>
+            <Link
+              href="/auth/signin"
+              className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              Acceder con cuenta USAL →
+            </Link>
           </div>
         </div>
       </section>
