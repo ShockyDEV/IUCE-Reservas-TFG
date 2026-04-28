@@ -51,11 +51,28 @@ export default async function DashboardPage() {
             Has iniciado sesión como <strong>{user.email}</strong>.
           </p>
 
-          <div className="mt-10 rounded-lg border border-gray-200 bg-gray-50 p-6">
-            <p className="text-sm text-gray-600">
-              Próximamente en este panel podrás ver tus reservas, consultar el
-              catálogo de espacios y solicitar nuevas reservas.
-            </p>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+            <Link
+              href="/spaces"
+              className="rounded-lg border border-gray-200 bg-white p-6 transition hover:shadow-md"
+            >
+              <h2 className="font-semibold text-gray-900">
+                Catálogo de espacios
+              </h2>
+              <p className="mt-2 text-sm text-gray-500">
+                Consulta los espacios disponibles del IUCE.
+              </p>
+              <span className="mt-4 inline-block text-sm font-medium text-blue-600">
+                Ver espacios →
+              </span>
+            </Link>
+
+            <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-6 opacity-60">
+              <h2 className="font-semibold text-gray-700">Mis reservas</h2>
+              <p className="mt-2 text-sm text-gray-500">
+                Próximamente podrás solicitar y consultar tus reservas.
+              </p>
+            </div>
           </div>
         </div>
       </section>
