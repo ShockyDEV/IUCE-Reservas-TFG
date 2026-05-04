@@ -2,6 +2,7 @@ import { auth, signOut } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -11,6 +12,32 @@ export default async function DashboardPage() {
   }
 
   const user = session.user;
+
+  const reservations = await prisma.reservation.findMany({
+    where: { userId: user.id },
+    include: {
+      space: { select: { name: true, code: true, color: true } },
+    },
+    orderBy: { startTime: "desc" },
+    take: 5,
+  });
+
+  const formatter = new Intl.DateTimeFormat("es-ES", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+  const statusLabel: Record<string, string> = {
+    PENDING: "Pendiente",
+    APPROVED: "Aprobada",
+    REJECTED: "Rechazada",
+  };
+
+  const statusClass: Record<string, string> = {
+    PENDING: "bg-amber-50 text-amber-700",
+    APPROVED: "bg-green-50 text-green-700",
+    REJECTED: "bg-red-50 text-red-700",
+  };
 
   return (
     <main className="min-h-screen flex flex-col">
@@ -67,11 +94,41 @@ export default async function DashboardPage() {
               </span>
             </Link>
 
-            <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-6 opacity-60">
-              <h2 className="font-semibold text-gray-700">Mis reservas</h2>
+            <div className="rounded-lg border border-gray-200 bg-white p-6">
+              <h2 className="font-semibold text-gray-900">Mis reservas</h2>
               <p className="mt-2 text-sm text-gray-500">
-                Próximamente podrás solicitar y consultar tus reservas.
+                Últimas solicitudes que has enviado al IUCE.
               </p>
+              {reservations.length === 0 ? (
+                <p className="mt-4 text-sm text-gray-400">
+                  Todavía no has solicitado ninguna reserva.
+                </p>
+              ) : (
+                <ul className="mt-4 space-y-2">
+                  {reservations.map((r) => (
+                    <li
+                      key={r.id}
+                      className="flex items-center justify-between gap-3 rounded-md border border-gray-100 bg-gray-50 px-3 py-2 text-sm"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-gray-900">
+                          {r.title}
+                        </p>
+                        <p className="truncate text-xs text-gray-500">
+                          {r.space.name} · {formatter.format(r.startTime)}
+                        </p>
+                      </div>
+                      <span
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+                          statusClass[r.status] || "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        {statusLabel[r.status] || r.status}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         </div>

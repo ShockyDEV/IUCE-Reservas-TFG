@@ -141,17 +141,14 @@ export default async function SpaceDetailPage({
               )}
 
               <div className="mt-10 border-t border-gray-100 pt-6">
-                <button
-                  type="button"
-                  disabled
-                  className="inline-flex items-center gap-2 rounded-md bg-gray-200 px-5 py-2.5 text-sm font-medium text-gray-500 cursor-not-allowed"
-                  title="Disponible próximamente"
+                <Link
+                  href={`/spaces/${space.id}/reserve`}
+                  className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
                 >
                   Reservar este espacio
-                </button>
-                <p className="mt-2 text-xs text-gray-400">
-                  La funcionalidad de reserva estará disponible en la próxima
-                  versión.
+                </Link>
+                <p className="mt-2 text-xs text-gray-500">
+                  Tu solicitud quedará en estado pendiente hasta su aprobación.
                 </p>
               </div>
             </div>
