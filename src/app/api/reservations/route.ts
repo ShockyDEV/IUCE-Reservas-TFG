@@ -3,6 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { createReservationSchema } from "@/lib/validations";
 import { ReservationStatus } from "@prisma/client";
+import {
+  sendReservationCreatedEmail,
+  sendNewRequestToAdminEmail,
+  buildReservationEmailData,
+} from "@/lib/email";
 
 export async function GET(req: NextRequest) {
   const session = await auth();
@@ -99,8 +104,29 @@ export async function POST(req: NextRequest) {
     },
     include: {
       space: { select: { name: true, code: true } },
+      user: { select: { name: true, email: true } },
     },
   });
+
+  // Notificaciones por correo: confirmación al usuario y aviso al admin.
+  // Si el envío falla la reserva ya está creada y se loguea el error, sin abortar.
+  try {
+    const emailData = buildReservationEmailData(reservation);
+    await sendReservationCreatedEmail(emailData);
+
+    const admins = await prisma.user.findMany({
+      where: { role: { in: ["ADMIN", "SUPER_ADMIN"] } },
+      select: { email: true },
+    });
+    if (admins.length > 0) {
+      await sendNewRequestToAdminEmail(
+        emailData,
+        admins.map((a) => a.email)
+      );
+    }
+  } catch (error) {
+    console.error("Error enviando emails de la nueva reserva:", error);
+  }
 
   return NextResponse.json(reservation, { status: 201 });
 }
