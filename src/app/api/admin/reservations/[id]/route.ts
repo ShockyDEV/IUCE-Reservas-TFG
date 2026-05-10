@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { UserRole } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { reviewReservationSchema } from "@/lib/validations";
+import { canTransitionTo, isAdminRole } from "@/lib/reservations";
 import {
   sendReservationDecisionEmail,
   buildReservationEmailData,
@@ -16,9 +18,8 @@ export async function PATCH(
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
-  const role = (session.user as { role?: string }).role;
-  const isAdmin = role === "ADMIN" || role === "SUPER_ADMIN";
-  if (!isAdmin) {
+  const role = (session.user as { role?: UserRole }).role;
+  if (!isAdminRole(role)) {
     return NextResponse.json(
       { error: "Permisos insuficientes" },
       { status: 403 }
@@ -35,13 +36,6 @@ export async function PATCH(
     );
   }
 
-  if (reservation.status !== "PENDING") {
-    return NextResponse.json(
-      { error: "Solo se pueden revisar reservas en estado PENDING" },
-      { status: 409 }
-    );
-  }
-
   const body = await req.json().catch(() => null);
   const parsed = reviewReservationSchema.safeParse(body);
   if (!parsed.success) {
@@ -55,6 +49,15 @@ export async function PATCH(
   }
 
   const { status, adminNotes } = parsed.data;
+
+  if (!canTransitionTo(reservation.status, status, role as UserRole)) {
+    return NextResponse.json(
+      {
+        error: `No se permite la transición ${reservation.status} → ${status} para el rol actual`,
+      },
+      { status: 409 }
+    );
+  }
 
   // Si la decisión es APPROVED, comprobamos que no haya conflicto con otra
   // reserva ya aprobada en el mismo espacio para el mismo intervalo.
