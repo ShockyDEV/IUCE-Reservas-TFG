@@ -89,15 +89,17 @@ export const authConfig: NextAuthConfig = {
         // ─── Mock login (dev only) ───
         if (useMockAuth) {
           const mockUser = MOCK_USERS.find((u) => u.email === email);
-          if (mockUser) return mockUser;
+          const targetName = mockUser?.name ?? formatNameFromEmail(email);
+          const targetRole = mockUser?.role ?? getDefaultRole(email);
 
+          // Upsert en BD para que el callback jwt pueda recuperar id/role
           const user = await prisma.user.upsert({
             where: { email },
             update: {
               lastLogin: new Date(),
-              ...(getDefaultRole(email) !== "USER" && { role: getDefaultRole(email) }),
+              role: targetRole,
             },
-            create: { email, name: formatNameFromEmail(email), role: getDefaultRole(email) },
+            create: { email, name: targetName, role: targetRole },
           });
 
           return { id: user.id, email: user.email, name: user.name, role: user.role, image: user.image };

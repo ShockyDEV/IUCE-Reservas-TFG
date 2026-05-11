@@ -3,12 +3,32 @@
 import { useState, FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { signIn } from "next-auth/react";
+
+const IS_DEV = process.env.NEXT_PUBLIC_USE_MOCK_AUTH === "true";
+
+const MOCK_USERS = [
+  { email: "admin@usal.es", name: "María García López", role: "Admin" },
+  { email: "investigador1@usal.es", name: "Ana Fernández Ruiz", role: "Usuario" },
+  { email: "superadmin@usal.es", name: "Carlos Rodríguez Martín", role: "Super Admin" },
+];
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  async function handleMockLogin(mockEmail: string) {
+    setLoading(true);
+    setError("");
+    try {
+      await signIn("credentials", { email: mockEmail, callbackUrl: "/dashboard" });
+    } catch {
+      setError("No se pudo iniciar sesión en modo desarrollo");
+      setLoading(false);
+    }
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -82,6 +102,48 @@ export default function SignInPage() {
           </p>
         </div>
 
+        {IS_DEV && (
+          <div className="mb-6">
+            <div className="rounded-md bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-800">
+              Modo desarrollo activo — acceso rápido sin enviar emails reales
+            </div>
+            <p className="mt-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+              Acceso rápido (dev)
+            </p>
+            <div className="mt-2 space-y-2">
+              {MOCK_USERS.map((u) => (
+                <button
+                  key={u.email}
+                  type="button"
+                  onClick={() => handleMockLogin(u.email)}
+                  disabled={loading}
+                  className="w-full flex items-center justify-between gap-3 rounded-md border border-gray-200 bg-white px-3 py-2 text-left hover:border-blue-400 hover:bg-blue-50 transition-colors disabled:opacity-50"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {u.name}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">{u.email}</p>
+                  </div>
+                  <span className="text-[10px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                    {u.role}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-white px-3 text-gray-400">
+                  o envía un magic link
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
@@ -94,7 +156,7 @@ export default function SignInPage() {
               id="email"
               type="email"
               required
-              autoFocus
+              autoFocus={!IS_DEV}
               placeholder="nombre@usal.es"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
