@@ -79,8 +79,6 @@ export const authConfig: NextAuthConfig = {
               create: { email, name: formatNameFromEmail(email), role: assignedRole },
             });
 
-            if (user.isBanned) return null;
-
             return { id: user.id, email: user.email, name: user.name, role: user.role, image: user.image };
           } catch (error) {
             console.error("Magic link verification error:", error);
@@ -102,7 +100,6 @@ export const authConfig: NextAuthConfig = {
             create: { email, name: formatNameFromEmail(email), role: getDefaultRole(email) },
           });
 
-          if (user.isBanned) return null;
           return { id: user.id, email: user.email, name: user.name, role: user.role, image: user.image };
         }
 
@@ -119,12 +116,11 @@ export const authConfig: NextAuthConfig = {
       if (user?.email) {
         const dbUser = await prisma.user.findUnique({
           where: { email: user.email },
-          select: { id: true, role: true, department: true, isBanned: true },
+          select: { id: true, role: true },
         });
         if (dbUser) {
           token.userId = dbUser.id;
           token.role = dbUser.role;
-          token.department = dbUser.department;
         }
       }
       return token;
@@ -133,7 +129,6 @@ export const authConfig: NextAuthConfig = {
       if (session.user) {
         session.user.id = token.userId as string;
         session.user.role = token.role as string;
-        session.user.department = token.department as string | null;
       }
       return session;
     },
