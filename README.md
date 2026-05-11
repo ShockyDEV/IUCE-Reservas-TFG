@@ -38,6 +38,7 @@
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Análisis y diseño](#análisis-y-diseño)
 - [Roadmap por sprints](#roadmap-por-sprints)
+- [Releases](#releases)
 - [Licencia](#licencia)
 - [Autor](#autor)
 
@@ -278,6 +279,18 @@ El proyecto se organiza en 10 sprints (14 abril – 5 junio 2026) y 11 épicas (
 | EPIC-10 | DevOps y Despliegue |
 
 </details>
+
+---
+
+## Releases
+
+Cada cierre de hito relevante del proyecto se publica como una **release** versionada en GitHub. Ahí se incluye el changelog detallado, capturas de la interfaz, evidencias de calidad (tests + SonarCloud) e instrucciones para levantar la versión correspondiente en local.
+
+> Página completa con todas las publicaciones: [github.com/ShockyDEV/IUCE-Reservas-TFG/releases](https://github.com/ShockyDEV/IUCE-Reservas-TFG/releases)
+
+| Versión | Estado | Fecha | Contenido principal |
+|---------|--------|-------|---------------------|
+| [`v0.1.0`](https://github.com/ShockyDEV/IUCE-Reservas-TFG/releases/tag/v0.1.0) | Pre-release | 11 mayo 2026 | Cierre de Sprints 1-4: autenticación con magic link, catálogo de espacios, motor de reservas y flujo de aprobación administrativa con notificaciones por email. |
 
 ---
 
