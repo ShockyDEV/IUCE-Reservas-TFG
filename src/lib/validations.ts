@@ -38,4 +38,17 @@ export const createReservationSchema = z
     }
   );
 
+export const reviewReservationSchema = z.object({
+  status: z.enum(["APPROVED", "REJECTED"], {
+    errorMap: () => ({
+      message: "El estado debe ser APPROVED o REJECTED",
+    }),
+  }),
+  adminNotes: z
+    .string()
+    .max(500, "Las notas no pueden superar los 500 caracteres")
+    .optional(),
+});
+
 export type CreateReservationInput = z.infer<typeof createReservationSchema>;
+export type ReviewReservationInput = z.infer<typeof reviewReservationSchema>;
