@@ -80,7 +80,7 @@ Este repositorio acompa√±a al **Trabajo de Fin de Grado** del Grado en Ingenier√
 npm install
 
 # 2. Variables de entorno
-cp .env.example .env.local
+cp .env.example .env
 
 # 3. Levantar Postgres en Docker
 docker-compose up -d
