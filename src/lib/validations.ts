@@ -22,6 +22,9 @@ export const createReservationSchema = z
       .int()
       .min(1, "Debe haber al menos 1 asistente")
       .max(500, "Máximo 500 asistentes"),
+    isRecurring: z.boolean().optional().default(false),
+    recurrenceRule: z.string().optional(),
+    recurrenceEndDate: z.string().optional(),
   })
   .refine(
     (data) => new Date(data.startTime) < new Date(data.endTime),
@@ -35,6 +38,36 @@ export const createReservationSchema = z
     {
       message: "No puedes reservar en una fecha pasada",
       path: ["startTime"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.isRecurring) {
+        return (
+          data.recurrenceRule !== undefined &&
+          ["WEEKLY", "BIWEEKLY", "MONTHLY"].includes(data.recurrenceRule)
+        );
+      }
+      return true;
+    },
+    {
+      message: "Selecciona un patrón de recurrencia válido (WEEKLY, BIWEEKLY o MONTHLY)",
+      path: ["recurrenceRule"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.isRecurring) {
+        return (
+          data.recurrenceEndDate !== undefined &&
+          !isNaN(Date.parse(data.recurrenceEndDate))
+        );
+      }
+      return true;
+    },
+    {
+      message: "Selecciona una fecha de fin de recurrencia válida",
+      path: ["recurrenceEndDate"],
     }
   );
 
@@ -50,5 +83,28 @@ export const reviewReservationSchema = z.object({
     .optional(),
 });
 
+export const createBlockedSlotSchema = z
+  .object({
+    spaceId: z.string().min(1, "Debes seleccionar un espacio"),
+    startTime: z.string().refine((val) => !isNaN(Date.parse(val)), {
+      message: "Fecha de inicio no válida",
+    }),
+    endTime: z.string().refine((val) => !isNaN(Date.parse(val)), {
+      message: "Fecha de fin no válida",
+    }),
+    reason: z
+      .string()
+      .min(3, "El motivo debe tener al menos 3 caracteres")
+      .max(300, "El motivo no puede superar los 300 caracteres"),
+  })
+  .refine(
+    (data) => new Date(data.startTime) < new Date(data.endTime),
+    {
+      message: "La hora de fin debe ser posterior a la hora de inicio",
+      path: ["endTime"],
+    }
+  );
+
 export type CreateReservationInput = z.infer<typeof createReservationSchema>;
 export type ReviewReservationInput = z.infer<typeof reviewReservationSchema>;
+export type CreateBlockedSlotInput = z.infer<typeof createBlockedSlotSchema>;
