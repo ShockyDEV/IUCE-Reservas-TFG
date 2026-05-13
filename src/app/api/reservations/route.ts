@@ -138,6 +138,23 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
+      const blocked = await prisma.blockedSlot.findFirst({
+        where: {
+          spaceId,
+          startTime: { lt: instanceEnd },
+          endTime: { gt: instanceStart },
+        },
+        select: { reason: true },
+      });
+
+      if (blocked) {
+        skipped.push({
+          start: instanceStart.toISOString(),
+          reason: `Franja bloqueada por administración: ${blocked.reason}`,
+        });
+        continue;
+      }
+
       const created = await prisma.reservation.create({
         data: {
           title,
@@ -181,6 +198,24 @@ export async function POST(req: NextRequest) {
   if (overlapping) {
     return NextResponse.json(
       { error: "Ya existe una reserva en ese horario para este espacio" },
+      { status: 409 }
+    );
+  }
+
+  const blocked = await prisma.blockedSlot.findFirst({
+    where: {
+      spaceId,
+      startTime: { lt: baseEnd },
+      endTime: { gt: baseStart },
+    },
+    select: { reason: true },
+  });
+
+  if (blocked) {
+    return NextResponse.json(
+      {
+        error: `La franja seleccionada está bloqueada por administración: ${blocked.reason}`,
+      },
       { status: 409 }
     );
   }
