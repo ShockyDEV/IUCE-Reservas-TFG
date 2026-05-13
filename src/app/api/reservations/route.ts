@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { createReservationSchema } from "@/lib/validations";
 import { ReservationStatus } from "@prisma/client";
+import {
+  generateRecurrenceDates,
+  MAX_RECURRENCE_OCCURRENCES,
+  RecurrencePattern,
+} from "@/lib/recurrence";
 import {
   sendReservationCreatedEmail,
   sendNewRequestToAdminEmail,
@@ -53,8 +59,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { title, description, spaceId, startTime, endTime, attendees } =
-    parsed.data;
+  const {
+    title,
+    description,
+    spaceId,
+    startTime,
+    endTime,
+    attendees,
+    isRecurring,
+    recurrenceRule,
+    recurrenceEndDate,
+  } = parsed.data;
 
   const space = await prisma.space.findUnique({ where: { id: spaceId } });
   if (!space || !space.isActive) {
@@ -73,15 +88,93 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const start = new Date(startTime);
-  const end = new Date(endTime);
+  const baseStart = new Date(startTime);
+  const baseEnd = new Date(endTime);
+  const durationMs = baseEnd.getTime() - baseStart.getTime();
 
+  // ============================================
+  // Reservas recurrentes
+  // ============================================
+  if (isRecurring && recurrenceRule && recurrenceEndDate) {
+    const recEndDate = new Date(recurrenceEndDate);
+    recEndDate.setHours(23, 59, 59, 999);
+
+    const dates = generateRecurrenceDates(
+      baseStart,
+      recurrenceRule as RecurrencePattern,
+      recEndDate
+    );
+
+    if (dates.length > MAX_RECURRENCE_OCCURRENCES) {
+      return NextResponse.json(
+        {
+          error: `La recurrencia genera más de ${MAX_RECURRENCE_OCCURRENCES} ocurrencias. Acorta el rango.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    const recurrenceGroupId = randomUUID();
+    const skipped: { start: string; reason: string }[] = [];
+    const createdIds: string[] = [];
+
+    for (const instanceStart of dates) {
+      const instanceEnd = new Date(instanceStart.getTime() + durationMs);
+
+      const overlapping = await prisma.reservation.findFirst({
+        where: {
+          spaceId,
+          status: { in: ["APPROVED", "PENDING"] },
+          startTime: { lt: instanceEnd },
+          endTime: { gt: instanceStart },
+        },
+      });
+
+      if (overlapping) {
+        skipped.push({
+          start: instanceStart.toISOString(),
+          reason: "Conflicto con otra reserva existente",
+        });
+        continue;
+      }
+
+      const created = await prisma.reservation.create({
+        data: {
+          title,
+          description,
+          startTime: instanceStart,
+          endTime: instanceEnd,
+          attendees,
+          userId: session.user.id,
+          spaceId,
+          isRecurring: true,
+          recurrenceRule,
+          recurrenceGroupId,
+        },
+      });
+      createdIds.push(created.id);
+    }
+
+    return NextResponse.json(
+      {
+        recurrenceGroupId,
+        created: createdIds.length,
+        total: dates.length,
+        skipped,
+      },
+      { status: 201 }
+    );
+  }
+
+  // ============================================
+  // Reserva individual
+  // ============================================
   const overlapping = await prisma.reservation.findFirst({
     where: {
       spaceId,
       status: { in: ["APPROVED", "PENDING"] },
-      startTime: { lt: end },
-      endTime: { gt: start },
+      startTime: { lt: baseEnd },
+      endTime: { gt: baseStart },
     },
   });
 
@@ -96,8 +189,8 @@ export async function POST(req: NextRequest) {
     data: {
       title,
       description,
-      startTime: start,
-      endTime: end,
+      startTime: baseStart,
+      endTime: baseEnd,
       attendees,
       userId: session.user.id,
       spaceId,
