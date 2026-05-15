@@ -32,6 +32,7 @@ model User {
   sessions     Session[]
   reservations Reservation[] @relation("UserReservations")
   reviewed     Reservation[] @relation("ReviewedBy")
+  blockedSlots BlockedSlot[]
 
   @@index([email])
   @@index([role])
@@ -54,23 +55,27 @@ model Space {
   updatedAt     DateTime  @updatedAt
 
   reservations Reservation[]
+  blockedSlots BlockedSlot[]
 
   @@index([isActive])
   @@index([building])
 }
 
 model Reservation {
-  id          String            @id @default(cuid())
-  title       String
-  description String?
-  startTime   DateTime
-  endTime     DateTime
-  status      ReservationStatus @default(PENDING)
-  attendees   Int               @default(1)
-  adminNotes  String?
-  reviewedAt  DateTime?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id                String            @id @default(cuid())
+  title             String
+  description       String?
+  startTime         DateTime
+  endTime           DateTime
+  status            ReservationStatus @default(PENDING)
+  attendees         Int               @default(1)
+  adminNotes        String?
+  reviewedAt        DateTime?
+  isRecurring       Boolean           @default(false)
+  recurrenceRule    String?
+  recurrenceGroupId String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 
   userId       String
   user         User   @relation("UserReservations", fields: [userId], references: [id], onDelete: Cascade)
@@ -83,6 +88,22 @@ model Reservation {
   @@index([spaceId, startTime, endTime])
   @@index([status])
   @@index([startTime])
+  @@index([recurrenceGroupId])
+}
+
+model BlockedSlot {
+  id        String   @id @default(cuid())
+  startTime DateTime
+  endTime   DateTime
+  reason    String
+  createdAt DateTime @default(now())
+
+  spaceId     String
+  space       Space  @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+
+  @@index([spaceId, startTime, endTime])
 }
 
 model Account {
