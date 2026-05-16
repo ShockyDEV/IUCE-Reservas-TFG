@@ -33,6 +33,7 @@ model User {
   reservations Reservation[] @relation("UserReservations")
   reviewed     Reservation[] @relation("ReviewedBy")
   blockedSlots BlockedSlot[]
+  auditLogs    AuditLog[]
 
   @@index([email])
   @@index([role])
@@ -104,6 +105,23 @@ model BlockedSlot {
   createdBy   User   @relation(fields: [createdById], references: [id])
 
   @@index([spaceId, startTime, endTime])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  userId     String
+  targetType String
+  targetId   String
+  details    String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([targetType, targetId])
 }
 
 model Account {
