@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { reviewReservationSchema } from "@/lib/validations";
 import { canTransitionTo, isAdminRole } from "@/lib/reservations";
+import { logAudit } from "@/lib/audit";
 import {
   sendReservationDecisionEmail,
   buildReservationEmailData,
@@ -94,6 +95,21 @@ export async function PATCH(
       space: { select: { name: true, code: true } },
       user: { select: { name: true, email: true } },
       reviewedBy: { select: { name: true } },
+    },
+  });
+
+  // Registro en el audit log: trazabilidad de quién aprobó o rechazó qué.
+  await logAudit({
+    action: status === "APPROVED" ? "RESERVATION_APPROVED" : "RESERVATION_REJECTED",
+    userId: session.user.id,
+    targetType: "reservation",
+    targetId: reservation.id,
+    details: {
+      title: reservation.title,
+      spaceId: reservation.spaceId,
+      previousStatus: reservation.status,
+      newStatus: status,
+      adminNotes: adminNotes ?? null,
     },
   });
 
