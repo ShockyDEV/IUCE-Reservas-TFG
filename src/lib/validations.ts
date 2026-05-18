@@ -105,6 +105,15 @@ export const createBlockedSlotSchema = z
     }
   );
 
+export const updateUserRoleSchema = z.object({
+  role: z.enum(["USER", "ADMIN", "SUPER_ADMIN"], {
+    errorMap: () => ({
+      message: "El rol debe ser USER, ADMIN o SUPER_ADMIN",
+    }),
+  }),
+});
+
 export type CreateReservationInput = z.infer<typeof createReservationSchema>;
 export type ReviewReservationInput = z.infer<typeof reviewReservationSchema>;
 export type CreateBlockedSlotInput = z.infer<typeof createBlockedSlotSchema>;
+export type UpdateUserRoleInput = z.infer<typeof updateUserRoleSchema>;
