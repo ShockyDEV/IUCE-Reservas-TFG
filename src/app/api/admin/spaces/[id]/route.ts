@@ -94,3 +94,66 @@ export async function PATCH(
     );
   }
 }
+
+/**
+ * DELETE /api/admin/spaces/[id]
+ *
+ * Realiza un soft delete sobre el espacio: marca `isActive=false` en
+ * lugar de eliminar la fila. Las reservas históricas asociadas se
+ * conservan intactas y siguen siendo consultables desde el panel admin
+ * y el dashboard del usuario, pero el espacio deja de aparecer en el
+ * catálogo público.
+ */
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await auth();
+  if (!session?.user) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
+  const role = (session.user as { role?: string }).role;
+  if (!isAdminRole(role)) {
+    return NextResponse.json(
+      { error: "Solo el personal administrativo puede desactivar espacios" },
+      { status: 403 }
+    );
+  }
+
+  const existing = await prisma.space.findUnique({ where: { id: params.id } });
+  if (!existing) {
+    return NextResponse.json(
+      { error: "Espacio no encontrado" },
+      { status: 404 }
+    );
+  }
+
+  if (!existing.isActive) {
+    return NextResponse.json(
+      { error: "El espacio ya está desactivado" },
+      { status: 409 }
+    );
+  }
+
+  const updated = await prisma.space.update({
+    where: { id: existing.id },
+    data: { isActive: false },
+  });
+
+  await logAudit({
+    action: "SPACE_DEACTIVATED",
+    userId: session.user.id,
+    targetType: "space",
+    targetId: updated.id,
+    details: {
+      name: updated.name,
+      code: updated.code,
+    },
+  });
+
+  return NextResponse.json({
+    message: "Espacio desactivado",
+    space: updated,
+  });
+}
