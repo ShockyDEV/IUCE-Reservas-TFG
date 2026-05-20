@@ -13,7 +13,7 @@
 <!-- BADGES -->
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License MIT" />
-  <img src="https://img.shields.io/badge/sprint-6%2F10%20completado-green?style=flat-square" alt="Sprint progress" />
+  <img src="https://img.shields.io/badge/sprint-7%2F10%20completado-green?style=flat-square" alt="Sprint progress" />
   <img src="https://img.shields.io/badge/Next.js-14-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 14" />
   <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 5" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL 16" />
@@ -256,7 +256,7 @@ El proyecto se organiza en 10 sprints (14 abril – 5 junio 2026) y 11 épicas (
 - [x] **Sprint 3** · Calendario y Reservas v1 *(30 abr - 5 may)*
 - [x] **Sprint 4** · Aprobación y Email *(6-10 may)*
 - [x] **Sprint 5** · Recurrencia y BlockedSlot *(11-15 may)*
-- [ ] **Sprint 6** · Panel Admin y Audit *(16-20 may)*
+- [x] **Sprint 6** · Panel Admin y Audit *(16-20 may)*
 - [ ] **Sprint 7** · UX y Mobile *(21-25 may)*
 - [ ] **Sprint 8** · DevOps y Despliegue *(26-30 may)*
 - [ ] **Sprint 9** · QA y Release *(31 may - 5 jun)*

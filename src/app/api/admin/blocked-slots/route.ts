@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { createBlockedSlotSchema } from "@/lib/validations";
 import { isAdminRole } from "@/lib/reservations";
+import { logAudit } from "@/lib/audit";
 
 /**
  * GET /api/admin/blocked-slots
@@ -107,6 +108,21 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  await logAudit({
+    action: "BLOCKED_SLOT_CREATED",
+    userId: session.user.id,
+    targetType: "blocked_slot",
+    targetId: slot.id,
+    details: {
+      spaceId,
+      spaceName: slot.space.name,
+      startTime: start.toISOString(),
+      endTime: end.toISOString(),
+      reason,
+      overlappingApprovedReservations: overlapping.length,
+    },
+  });
+
   return NextResponse.json(
     {
       ...slot,
@@ -156,5 +172,19 @@ export async function DELETE(req: NextRequest) {
   }
 
   await prisma.blockedSlot.delete({ where: { id } });
+
+  await logAudit({
+    action: "BLOCKED_SLOT_DELETED",
+    userId: session.user.id,
+    targetType: "blocked_slot",
+    targetId: id,
+    details: {
+      spaceId: slot.spaceId,
+      startTime: slot.startTime.toISOString(),
+      endTime: slot.endTime.toISOString(),
+      reason: slot.reason,
+    },
+  });
+
   return NextResponse.json({ message: "Bloqueo eliminado" });
 }
