@@ -3,12 +3,27 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import {
+  ArrowLeft,
+  CalendarDays,
+  Clock,
+  Users,
+  Building2,
+  Send,
+  AlertCircle,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 
 interface Space {
   id: string;
   name: string;
   code: string;
   capacity: number;
+  color?: string;
 }
 
 export default function ReservePage({ params }: { params: { id: string } }) {
@@ -76,7 +91,6 @@ export default function ReservePage({ params }: { params: { id: string } }) {
         setError(data.error || "Error al crear la reserva");
         return;
       }
-
       router.push("/dashboard?reserved=1");
     } catch {
       setError("Error de conexión con el servidor");
@@ -88,144 +102,149 @@ export default function ReservePage({ params }: { params: { id: string } }) {
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-2xl px-6 py-10">
-        <Link
-          href={`/spaces/${params.id}`}
-          className="text-sm text-gray-500 hover:text-gray-700"
-        >
-          ← Volver al espacio
-        </Link>
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10">
+      <Link
+        href={`/spaces/${params.id}`}
+        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Volver al espacio
+      </Link>
 
-        <h1 className="mt-4 text-2xl font-bold text-gray-900">
-          Solicitar reserva
-        </h1>
+      <div className="mt-6">
+        <Badge variant="info">Nueva solicitud</Badge>
+        <h1 className="mt-3 text-3xl font-bold text-gray-900">Solicitar reserva</h1>
         {space && (
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1.5 text-sm text-gray-500 flex items-center gap-1.5">
+            <Building2 className="h-4 w-4" />
             {space.name} · {space.code} · capacidad {space.capacity} personas
           </p>
         )}
-
-        <form
-          onSubmit={handleSubmit}
-          className="mt-8 space-y-5 rounded-lg border border-gray-200 bg-white p-6"
-        >
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Título *
-            </label>
-            <input
-              type="text"
-              required
-              minLength={3}
-              maxLength={120}
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="Ej: Seminario de investigación"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Descripción
-            </label>
-            <textarea
-              rows={3}
-              maxLength={500}
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-              placeholder="Describe brevemente el uso del espacio (opcional)"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Fecha *
-            </label>
-            <input
-              type="date"
-              required
-              min={today}
-              value={form.date}
-              onChange={(e) => setForm({ ...form, date: e.target.value })}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Hora inicio *
-              </label>
-              <input
-                type="time"
-                required
-                value={form.startTime}
-                onChange={(e) =>
-                  setForm({ ...form, startTime: e.target.value })
-                }
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Hora fin *
-              </label>
-              <input
-                type="time"
-                required
-                value={form.endTime}
-                onChange={(e) =>
-                  setForm({ ...form, endTime: e.target.value })
-                }
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Número de asistentes
-            </label>
-            <input
-              type="number"
-              min={1}
-              max={space?.capacity || 500}
-              value={form.attendees}
-              onChange={(e) =>
-                setForm({ ...form, attendees: parseInt(e.target.value) || 1 })
-              }
-              className="mt-1 block w-32 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-
-          {error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
-              {error}
-            </div>
-          )}
-
-          <div className="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
-            <Link
-              href={`/spaces/${params.id}`}
-              className="rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
-              Cancelar
-            </Link>
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded-md bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400"
-            >
-              {loading ? "Enviando..." : "Solicitar reserva"}
-            </button>
-          </div>
-        </form>
       </div>
-    </main>
+
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle>Datos de la reserva</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Título <span className="text-usal-red">*</span>
+              </label>
+              <Input
+                type="text"
+                required
+                minLength={3}
+                maxLength={120}
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                placeholder="Ej: Seminario de investigación"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Descripción
+              </label>
+              <Textarea
+                rows={3}
+                maxLength={500}
+                value={form.description}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+                placeholder="Describe brevemente el uso del espacio (opcional)"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <CalendarDays className="inline-block h-4 w-4 mr-1 -mt-0.5" />
+                Fecha <span className="text-usal-red">*</span>
+              </label>
+              <Input
+                type="date"
+                required
+                min={today}
+                value={form.date}
+                onChange={(e) => setForm({ ...form, date: e.target.value })}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <Clock className="inline-block h-4 w-4 mr-1 -mt-0.5" />
+                  Hora inicio <span className="text-usal-red">*</span>
+                </label>
+                <Input
+                  type="time"
+                  required
+                  value={form.startTime}
+                  onChange={(e) =>
+                    setForm({ ...form, startTime: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <Clock className="inline-block h-4 w-4 mr-1 -mt-0.5" />
+                  Hora fin <span className="text-usal-red">*</span>
+                </label>
+                <Input
+                  type="time"
+                  required
+                  value={form.endTime}
+                  onChange={(e) => setForm({ ...form, endTime: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <Users className="inline-block h-4 w-4 mr-1 -mt-0.5" />
+                Número de asistentes
+              </label>
+              <Input
+                type="number"
+                min={1}
+                max={space?.capacity || 500}
+                value={form.attendees}
+                onChange={(e) =>
+                  setForm({ ...form, attendees: parseInt(e.target.value) || 1 })
+                }
+                className="w-32"
+              />
+            </div>
+
+            {error && (
+              <div className="flex items-start gap-2 rounded-lg border border-danger-500/20 bg-danger-50 p-3 text-sm text-danger-700">
+                <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
+              <Link href={`/spaces/${params.id}`}>
+                <Button type="button" variant="ghost">
+                  Cancelar
+                </Button>
+              </Link>
+              <Button type="submit" disabled={loading}>
+                {loading ? (
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  <>
+                    <Send className="h-4 w-4 mr-1.5" />
+                    Solicitar reserva
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
