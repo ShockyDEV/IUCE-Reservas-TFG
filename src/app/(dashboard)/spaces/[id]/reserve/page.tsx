@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import {
   ArrowLeft,
   CalendarDays,
@@ -88,12 +89,17 @@ export default function ReservePage({ params }: { params: { id: string } }) {
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Error al crear la reserva");
+        const message = data.error || "Error al crear la reserva";
+        setError(message);
+        toast.error(message);
         return;
       }
+      toast.success("Solicitud de reserva enviada");
       router.push("/dashboard?reserved=1");
     } catch {
-      setError("Error de conexión con el servidor");
+      const message = "Error de conexión con el servidor";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
