@@ -13,6 +13,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DashboardCalendar } from "@/components/calendar/dashboard-calendar";
 
 const STATUS_BADGE = {
   PENDING: { label: "Pendiente", variant: "warning" as const },
@@ -168,35 +169,45 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Atajos</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Link
-              href="/spaces"
-              className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3 hover:border-iuce-blue/40 hover:bg-iuce-blue-pale/30 transition-colors"
-            >
-              <div>
-                <p className="text-sm font-medium text-gray-900">Catálogo</p>
-                <p className="text-xs text-gray-500">Buscar un espacio</p>
-              </div>
-              <ArrowRight className="h-4 w-4 text-gray-400" />
-            </Link>
-            {isAdmin && (
+        <div className="space-y-6">
+          <DashboardCalendar
+            reservations={reservations.map((r) => ({
+              id: r.id,
+              startTime: r.startTime.toISOString(),
+              spaceColor: r.space.color,
+              status: r.status,
+            }))}
+          />
+          <Card>
+            <CardHeader>
+              <CardTitle>Atajos</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
               <Link
-                href="/admin"
-                className="flex items-center justify-between rounded-lg border border-usal-red/20 bg-danger-50/40 px-4 py-3 hover:bg-danger-50 transition-colors"
+                href="/spaces"
+                className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3 hover:border-iuce-blue/40 hover:bg-iuce-blue-pale/30 transition-colors"
               >
                 <div>
-                  <p className="text-sm font-medium text-usal-red">Administración</p>
-                  <p className="text-xs text-usal-red/70">Métricas y cola de solicitudes</p>
+                  <p className="text-sm font-medium text-gray-900">Catálogo</p>
+                  <p className="text-xs text-gray-500">Buscar un espacio</p>
                 </div>
-                <ArrowRight className="h-4 w-4 text-usal-red" />
+                <ArrowRight className="h-4 w-4 text-gray-400" />
               </Link>
-            )}
-          </CardContent>
-        </Card>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="flex items-center justify-between rounded-lg border border-usal-red/20 bg-danger-50/40 px-4 py-3 hover:bg-danger-50 transition-colors"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-usal-red">Administración</p>
+                    <p className="text-xs text-usal-red/70">Métricas y cola de solicitudes</p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-usal-red" />
+                </Link>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
