@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { isAdminRole } from "@/lib/reservations";
+import { requireAdmin } from "@/lib/admin-guard";
 import { createSpaceSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 
@@ -15,18 +14,8 @@ import { logAudit } from "@/lib/audit";
  * el error de unicidad de Prisma.
  */
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
-
-  const role = (session.user as { role?: string }).role;
-  if (!isAdminRole(role)) {
-    return NextResponse.json(
-      { error: "Solo el personal administrativo puede crear espacios" },
-      { status: 403 }
-    );
-  }
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
   const body = await req.json().catch(() => null);
   const parsed = createSpaceSchema.safeParse(body);
@@ -60,7 +49,7 @@ export async function POST(req: NextRequest) {
 
     await logAudit({
       action: "SPACE_CREATED",
-      userId: session.user.id,
+      userId: guard.userId,
       targetType: "space",
       targetId: space.id,
       details: {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { createBlockedSlotSchema } from "@/lib/validations";
-import { isAdminRole } from "@/lib/reservations";
+import { requireAdmin } from "@/lib/admin-guard";
 import { logAudit } from "@/lib/audit";
 
 /**
@@ -45,18 +45,8 @@ export async function GET(req: NextRequest) {
  * reservas previas.
  */
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
-
-  const role = (session.user as { role?: string }).role;
-  if (!isAdminRole(role)) {
-    return NextResponse.json(
-      { error: "Solo el personal administrativo puede crear bloqueos" },
-      { status: 403 }
-    );
-  }
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
   const body = await req.json().catch(() => null);
   const parsed = createBlockedSlotSchema.safeParse(body);
@@ -100,7 +90,7 @@ export async function POST(req: NextRequest) {
       startTime: start,
       endTime: end,
       reason,
-      createdById: session.user.id,
+      createdById: guard.userId,
     },
     include: {
       space: { select: { name: true, code: true } },
@@ -110,7 +100,7 @@ export async function POST(req: NextRequest) {
 
   await logAudit({
     action: "BLOCKED_SLOT_CREATED",
-    userId: session.user.id,
+    userId: guard.userId,
     targetType: "blocked_slot",
     targetId: slot.id,
     details: {
@@ -141,18 +131,8 @@ export async function POST(req: NextRequest) {
  * Elimina el bloqueo indicado. Requiere rol ADMIN o SUPER_ADMIN.
  */
 export async function DELETE(req: NextRequest) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
-
-  const role = (session.user as { role?: string }).role;
-  if (!isAdminRole(role)) {
-    return NextResponse.json(
-      { error: "Solo el personal administrativo puede eliminar bloqueos" },
-      { status: 403 }
-    );
-  }
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
@@ -175,7 +155,7 @@ export async function DELETE(req: NextRequest) {
 
   await logAudit({
     action: "BLOCKED_SLOT_DELETED",
-    userId: session.user.id,
+    userId: guard.userId,
     targetType: "blocked_slot",
     targetId: id,
     details: {

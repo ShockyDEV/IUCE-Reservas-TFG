@@ -3,7 +3,8 @@ import type { UserRole } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { reviewReservationSchema } from "@/lib/validations";
-import { canTransitionTo, isAdminRole } from "@/lib/reservations";
+import { canTransitionTo } from "@/lib/reservations";
+import { requireAdmin } from "@/lib/admin-guard";
 import { logAudit } from "@/lib/audit";
 import {
   sendReservationDecisionEmail,
@@ -14,18 +15,13 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
-  const role = (session.user as { role?: UserRole }).role;
-  if (!isAdminRole(role)) {
-    return NextResponse.json(
-      { error: "Permisos insuficientes" },
-      { status: 403 }
-    );
-  }
+  // Necesitamos el rol específico del caller para la comprobación de
+  // transición permitida (`canTransitionTo`), no solo confirmar que es admin.
+  const session = await auth();
+  const role = (session?.user as { role?: UserRole }).role;
 
   const reservation = await prisma.reservation.findUnique({
     where: { id: params.id },
@@ -88,7 +84,7 @@ export async function PATCH(
     data: {
       status,
       adminNotes: adminNotes ?? null,
-      reviewedById: session.user.id,
+      reviewedById: guard.userId,
       reviewedAt: new Date(),
     },
     include: {
@@ -101,7 +97,7 @@ export async function PATCH(
   // Registro en el audit log: trazabilidad de quién aprobó o rechazó qué.
   await logAudit({
     action: status === "APPROVED" ? "RESERVATION_APPROVED" : "RESERVATION_REJECTED",
-    userId: session.user.id,
+    userId: guard.userId,
     targetType: "reservation",
     targetId: reservation.id,
     details: {
