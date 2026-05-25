@@ -2,16 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { Check, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 export function ReviewActions({ reservationId }: { reservationId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState<"APPROVED" | "REJECTED" | null>(null);
   const [rejectMode, setRejectMode] = useState(false);
   const [adminNotes, setAdminNotes] = useState("");
-  const [error, setError] = useState<string | null>(null);
 
   async function decide(status: "APPROVED" | "REJECTED") {
-    setError(null);
     setLoading(status);
     try {
       const res = await fetch(`/api/admin/reservations/${reservationId}`, {
@@ -24,12 +26,15 @@ export function ReviewActions({ reservationId }: { reservationId: string }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Error al revisar la reserva");
+        toast.error(data.error || "Error al revisar la reserva");
         return;
       }
+      toast.success(
+        status === "APPROVED" ? "Reserva aprobada" : "Reserva rechazada",
+      );
       router.refresh();
     } catch {
-      setError("Error de conexión");
+      toast.error("Error de conexión");
     } finally {
       setLoading(null);
       setRejectMode(false);
@@ -40,60 +45,59 @@ export function ReviewActions({ reservationId }: { reservationId: string }) {
   if (rejectMode) {
     return (
       <div className="space-y-2 text-left">
-        <textarea
+        <Textarea
           value={adminNotes}
           onChange={(e) => setAdminNotes(e.target.value)}
           maxLength={500}
           rows={2}
           placeholder="Motivo del rechazo (opcional)"
-          className="block w-full rounded-md border border-gray-300 px-2 py-1 text-xs focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+          className="text-xs"
         />
         <div className="flex justify-end gap-2">
-          <button
-            onClick={() => {
-              setRejectMode(false);
-              setError(null);
-            }}
-            className="rounded-md px-2 py-1 text-xs text-gray-500 hover:bg-gray-100"
+          <Button
             type="button"
+            size="sm"
+            variant="ghost"
+            onClick={() => setRejectMode(false)}
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="danger"
             onClick={() => decide("REJECTED")}
             disabled={loading !== null}
-            className="rounded-md bg-red-600 px-2 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:bg-red-300"
-            type="button"
           >
             {loading === "REJECTED" ? "Rechazando…" : "Confirmar rechazo"}
-          </button>
+          </Button>
         </div>
-        {error && <p className="text-right text-xs text-red-600">{error}</p>}
       </div>
     );
   }
 
   return (
     <div className="flex justify-end gap-2">
-      <button
+      <Button
+        type="button"
+        size="sm"
+        variant="success"
         onClick={() => decide("APPROVED")}
         disabled={loading !== null}
-        className="rounded-md bg-green-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-green-700 disabled:bg-green-300"
-        type="button"
       >
+        <Check className="h-3.5 w-3.5 mr-1" />
         {loading === "APPROVED" ? "Aprobando…" : "Aprobar"}
-      </button>
-      <button
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
         onClick={() => setRejectMode(true)}
         disabled={loading !== null}
-        className="rounded-md border border-red-300 bg-white px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
-        type="button"
       >
+        <X className="h-3.5 w-3.5 mr-1" />
         Rechazar
-      </button>
-      {error && (
-        <span className="self-center text-xs text-red-600">{error}</span>
-      )}
+      </Button>
     </div>
   );
 }

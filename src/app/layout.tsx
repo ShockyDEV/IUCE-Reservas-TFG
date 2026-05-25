@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ToastProvider } from "@/components/toast-provider";
 
 export const metadata: Metadata = {
   title: "IUCE Reservas | Sistema de Gestión de Espacios",
@@ -14,7 +15,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className="min-h-screen bg-gray-50 antialiased">{children}</body>
+      <body className="min-h-screen bg-gray-50 antialiased">
+        {children}
+        <ToastProvider />
+      </body>
     </html>
   );
 }

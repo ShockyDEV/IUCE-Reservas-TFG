@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { isAdminRole } from "@/lib/reservations";
+import { requireAdmin } from "@/lib/admin-guard";
 import { updateSpaceSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 
@@ -17,18 +16,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
-
-  const role = (session.user as { role?: string }).role;
-  if (!isAdminRole(role)) {
-    return NextResponse.json(
-      { error: "Solo el personal administrativo puede modificar espacios" },
-      { status: 403 }
-    );
-  }
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
   const existing = await prisma.space.findUnique({ where: { id: params.id } });
   if (!existing) {
@@ -67,7 +56,7 @@ export async function PATCH(
 
     await logAudit({
       action: "SPACE_UPDATED",
-      userId: session.user.id,
+      userId: guard.userId,
       targetType: "space",
       targetId: updated.id,
       details: {
@@ -108,18 +97,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
-
-  const role = (session.user as { role?: string }).role;
-  if (!isAdminRole(role)) {
-    return NextResponse.json(
-      { error: "Solo el personal administrativo puede desactivar espacios" },
-      { status: 403 }
-    );
-  }
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
   const existing = await prisma.space.findUnique({ where: { id: params.id } });
   if (!existing) {
@@ -143,7 +122,7 @@ export async function DELETE(
 
   await logAudit({
     action: "SPACE_DEACTIVATED",
-    userId: session.user.id,
+    userId: guard.userId,
     targetType: "space",
     targetId: updated.id,
     details: {

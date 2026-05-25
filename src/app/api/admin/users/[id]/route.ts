@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { isAdminRole } from "@/lib/reservations";
+import { requireAdmin } from "@/lib/admin-guard";
 import { updateUserRoleSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 
@@ -17,18 +17,14 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
 
-  const callerRole = (session.user as { role?: string }).role;
-  if (!isAdminRole(callerRole)) {
-    return NextResponse.json(
-      { error: "Solo el personal administrativo puede modificar usuarios" },
-      { status: 403 }
-    );
-  }
+  // Necesitamos el rol del caller (no solo el id) para aplicar la
+  // restricción jerárquica: solo un SUPER_ADMIN puede modificar a otro
+  // SUPER_ADMIN.
+  const session = await auth();
+  const callerRole = (session?.user as { role?: string }).role;
 
   const target = await prisma.user.findUnique({
     where: { id: params.id },
@@ -55,7 +51,6 @@ export async function PATCH(
 
   const { role: newRole } = parsed.data;
 
-  // Solo un SUPER_ADMIN puede modificar a otro SUPER_ADMIN.
   if (target.role === "SUPER_ADMIN" && callerRole !== "SUPER_ADMIN") {
     return NextResponse.json(
       {
@@ -78,7 +73,7 @@ export async function PATCH(
 
   await logAudit({
     action: "USER_ROLE_CHANGED",
-    userId: session.user.id,
+    userId: guard.userId,
     targetType: "user",
     targetId: target.id,
     details: {
