@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 export type AuditAction =
   | "RESERVATION_APPROVED"
   | "RESERVATION_REJECTED"
+  | "RESERVATION_CANCELLED"
   | "BLOCKED_SLOT_CREATED"
   | "BLOCKED_SLOT_DELETED"
   | "USER_ROLE_CHANGED"

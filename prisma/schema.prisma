@@ -17,6 +17,7 @@ enum ReservationStatus {
   PENDING
   APPROVED
   REJECTED
+  CANCELLED
 }
 
 model User {
