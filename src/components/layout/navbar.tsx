@@ -6,6 +6,7 @@ import Image from "next/image";
 import { signOut } from "next-auth/react";
 import { CalendarDays, Building2, ShieldCheck, Menu, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { NotificationDropdown } from "@/components/layout/notification-dropdown";
 
 type Role = "USER" | "ADMIN" | "SUPER_ADMIN" | string;
 
@@ -67,6 +68,7 @@ export function Navbar({ user }: NavbarProps) {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
+          <NotificationDropdown />
           <div className="text-right leading-tight">
             <p className="text-sm font-medium text-gray-900">{user.name}</p>
             <p className="text-xs text-gray-500">{user.email}</p>
