@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   CalendarCheck,
+  CalendarOff,
   Clock,
   CheckCircle2,
   XCircle,
@@ -223,6 +224,24 @@ export default async function AdminHomePage() {
           <Button>
             <CalendarCheck className="h-4 w-4 mr-1.5" />
             Cola de reservas
+          </Button>
+        </Link>
+        <Link href="/admin/spaces">
+          <Button variant="secondary">
+            <Building2 className="h-4 w-4 mr-1.5" />
+            Gestionar espacios
+          </Button>
+        </Link>
+        <Link href="/admin/blocked-slots">
+          <Button variant="secondary">
+            <CalendarOff className="h-4 w-4 mr-1.5" />
+            Bloqueos de calendario
+          </Button>
+        </Link>
+        <Link href="/admin/users">
+          <Button variant="secondary">
+            <Users className="h-4 w-4 mr-1.5" />
+            Gestionar usuarios
           </Button>
         </Link>
         <Link href="/dashboard">

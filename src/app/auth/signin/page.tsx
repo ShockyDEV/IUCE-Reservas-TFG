@@ -92,14 +92,18 @@ export default function SignInPage() {
   return (
     <main className="min-h-screen flex bg-gradient-to-b from-brand-50/40 to-white">
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 bg-iuce-blue-dark text-white">
-        <Image
-          src="/images/iuce-logo.png"
-          alt="IUCE"
-          width={180}
-          height={60}
-          className="h-12 w-auto brightness-0 invert"
-          priority
-        />
+        <div className="flex justify-center">
+          <div className="rounded-xl bg-white px-8 py-5 shadow-md">
+            <Image
+              src="/images/iuce-logo.png"
+              alt="IUCE"
+              width={329}
+              height={153}
+              className="h-24 w-auto"
+              priority
+            />
+          </div>
+        </div>
         <div>
           <Badge variant="info" className="bg-white/10 text-white">
             <Sparkles className="h-3 w-3" />
