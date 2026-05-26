@@ -12,12 +12,21 @@
 
 <!-- BADGES -->
 <p align="center">
+  <a href="https://sonarcloud.io/summary/new_code?id=ShockyDEV_IUCE-Reservas-TFG">
+    <img src="https://sonarcloud.io/api/project_badges/quality_gate?project=ShockyDEV_IUCE-Reservas-TFG" alt="SonarCloud Quality Gate" />
+  </a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License MIT" />
   <img src="https://img.shields.io/badge/sprint-8%2F10%20completado-green?style=flat-square" alt="Sprint progress" />
   <img src="https://img.shields.io/badge/Next.js-14-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 14" />
   <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 5" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL 16" />
   <img src="https://img.shields.io/badge/deployment-active-success?style=flat-square&logo=vercel&logoColor=white" alt="Deployed" />
+  <a href="https://sonarcloud.io/summary/new_code?id=ShockyDEV_IUCE-Reservas-TFG">
+    <img src="https://sonarcloud.io/api/project_badges/measure?project=ShockyDEV_IUCE-Reservas-TFG&metric=alert_status" alt="Quality Gate Status" />
+  </a>
 </p>
 
 <!-- SKILLICONS -->
