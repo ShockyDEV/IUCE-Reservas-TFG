@@ -22,13 +22,14 @@ enum ReservationStatus {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String
-  role          UserRole  @default(USER)
-  image         String?
-  createdAt     DateTime  @default(now())
-  lastLogin     DateTime?
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String
+  role             UserRole  @default(USER)
+  image            String?
+  profileCompleted Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  lastLogin        DateTime?
 
   accounts     Account[]
   sessions     Session[]
