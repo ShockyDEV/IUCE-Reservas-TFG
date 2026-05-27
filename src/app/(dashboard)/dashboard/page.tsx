@@ -21,6 +21,7 @@ const STATUS_BADGE = {
   APPROVED: { label: "Aprobada", variant: "success" as const },
   REJECTED: { label: "Rechazada", variant: "danger" as const },
   CANCELLED: { label: "Cancelada", variant: "secondary" as const },
+  EXPIRED: { label: "Expirada", variant: "secondary" as const },
 };
 
 export default async function DashboardPage() {

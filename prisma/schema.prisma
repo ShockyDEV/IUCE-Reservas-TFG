@@ -18,6 +18,7 @@ enum ReservationStatus {
   APPROVED
   REJECTED
   CANCELLED
+  EXPIRED
 }
 
 model User {
