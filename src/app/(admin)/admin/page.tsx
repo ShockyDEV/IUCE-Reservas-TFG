@@ -66,6 +66,8 @@ export default async function AdminHomePage() {
     BLOCKED_SLOT_CREATED: "Bloqueo creado",
     BLOCKED_SLOT_DELETED: "Bloqueo eliminado",
     USER_ROLE_CHANGED: "Cambio de rol",
+    USER_BANNED: "Usuario suspendido",
+    USER_UNBANNED: "Usuario reactivado",
     SPACE_CREATED: "Espacio creado",
     SPACE_UPDATED: "Espacio actualizado",
     SPACE_DEACTIVATED: "Espacio desactivado",

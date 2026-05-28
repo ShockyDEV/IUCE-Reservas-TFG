@@ -18,6 +18,8 @@ export async function GET() {
       email: true,
       name: true,
       role: true,
+      isBanned: true,
+      banReason: true,
       createdAt: true,
       lastLogin: true,
     },

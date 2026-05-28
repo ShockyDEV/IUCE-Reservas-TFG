@@ -28,6 +28,8 @@ model User {
   role             UserRole  @default(USER)
   image            String?
   profileCompleted Boolean   @default(false)
+  isBanned         Boolean   @default(false)
+  banReason        String?
   createdAt        DateTime  @default(now())
   lastLogin        DateTime?
 

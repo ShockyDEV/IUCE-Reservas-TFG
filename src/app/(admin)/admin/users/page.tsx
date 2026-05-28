@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { ArrowLeft, ShieldCheck, Users as UsersIcon } from "lucide-react";
+import { ArrowLeft, Ban, ShieldCheck, Users as UsersIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { BanToggle } from "./ban-toggle";
 
 type Role = "USER" | "ADMIN" | "SUPER_ADMIN";
 
@@ -15,6 +16,8 @@ interface User {
   email: string;
   name: string;
   role: Role;
+  isBanned: boolean;
+  banReason: string | null;
   createdAt: string;
   lastLogin: string | null;
 }
@@ -150,14 +153,40 @@ export default function AdminUsersPage() {
                         <ShieldCheck className="h-3 w-3" />
                         {ROLE_LABEL[u.role]}
                       </Badge>
+                      {u.isBanned && (
+                        <Badge variant="danger">
+                          <Ban className="h-3 w-3" />
+                          Suspendido
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-xs text-gray-500 truncate">{u.email}</p>
+                    {u.isBanned && u.banReason && (
+                      <p className="mt-1 text-[11px] text-danger-700 truncate">
+                        Motivo: {u.banReason}
+                      </p>
+                    )}
                   </div>
                   <div className="text-right text-[11px] text-gray-400 hidden sm:block">
                     <p>Último login: {dateFmt(u.lastLogin)}</p>
                     <p>Alta: {dateFmt(u.createdAt)}</p>
                   </div>
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 flex items-center gap-2">
+                    {!isSelf && u.role !== "SUPER_ADMIN" && (
+                      <BanToggle
+                        userId={u.id}
+                        userName={u.name}
+                        isBanned={u.isBanned}
+                        banReason={u.banReason}
+                        onChange={({ isBanned, banReason }) =>
+                          setUsers((prev) =>
+                            prev.map((x) =>
+                              x.id === u.id ? { ...x, isBanned, banReason } : x
+                            )
+                          )
+                        }
+                      />
+                    )}
                     {canChange ? (
                       <select
                         value={u.role}

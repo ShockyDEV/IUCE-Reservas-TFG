@@ -20,15 +20,12 @@ export async function PATCH(
   const guard = await requireAdmin();
   if (!guard.ok) return guard.response;
 
-  // Necesitamos el rol del caller (no solo el id) para aplicar la
-  // restricción jerárquica: solo un SUPER_ADMIN puede modificar a otro
-  // SUPER_ADMIN.
   const session = await auth();
   const callerRole = (session?.user as { role?: string }).role;
 
   const target = await prisma.user.findUnique({
     where: { id: params.id },
-    select: { id: true, name: true, email: true, role: true },
+    select: { id: true, name: true, email: true, role: true, isBanned: true, banReason: true },
   });
   if (!target) {
     return NextResponse.json(
@@ -38,6 +35,48 @@ export async function PATCH(
   }
 
   const body = await req.json().catch(() => null);
+  if (!body || typeof body !== "object") {
+    return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
+  }
+
+  // Rama 1: cambio de ban/suspensión
+  if (typeof body.isBanned === "boolean") {
+    if (target.role === "SUPER_ADMIN") {
+      return NextResponse.json(
+        { error: "No se puede suspender a un SUPER_ADMIN" },
+        { status: 403 }
+      );
+    }
+
+    const banReason =
+      body.isBanned && typeof body.banReason === "string" && body.banReason.trim().length > 0
+        ? body.banReason.trim().slice(0, 500)
+        : null;
+
+    const updated = await prisma.user.update({
+      where: { id: target.id },
+      data: {
+        isBanned: body.isBanned,
+        banReason: body.isBanned ? banReason : null,
+      },
+      select: { id: true, name: true, email: true, role: true, isBanned: true, banReason: true },
+    });
+
+    await logAudit({
+      action: body.isBanned ? "USER_BANNED" : "USER_UNBANNED",
+      userId: guard.userId,
+      targetType: "user",
+      targetId: target.id,
+      details: {
+        targetEmail: target.email,
+        reason: banReason,
+      },
+    });
+
+    return NextResponse.json(updated);
+  }
+
+  // Rama 2: cambio de rol (comportamiento histórico)
   const parsed = updateUserRoleSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
