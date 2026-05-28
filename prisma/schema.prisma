@@ -110,6 +110,12 @@ model BlockedSlot {
   @@index([spaceId, startTime, endTime])
 }
 
+model SiteSetting {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
 model AuditLog {
   id         String   @id @default(cuid())
   action     String

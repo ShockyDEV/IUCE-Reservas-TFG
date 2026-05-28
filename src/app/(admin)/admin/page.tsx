@@ -9,6 +9,7 @@ import {
   Users,
   ArrowRight,
   ShieldCheck,
+  BookOpen,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -61,12 +62,14 @@ export default async function AdminHomePage() {
   const actionLabel: Record<string, string> = {
     RESERVATION_APPROVED: "Reserva aprobada",
     RESERVATION_REJECTED: "Reserva rechazada",
+    RESERVATION_CANCELLED: "Reserva cancelada",
     BLOCKED_SLOT_CREATED: "Bloqueo creado",
     BLOCKED_SLOT_DELETED: "Bloqueo eliminado",
     USER_ROLE_CHANGED: "Cambio de rol",
     SPACE_CREATED: "Espacio creado",
     SPACE_UPDATED: "Espacio actualizado",
     SPACE_DEACTIVATED: "Espacio desactivado",
+    SETTING_UPDATED: "Configuración actualizada",
   };
 
   return (
@@ -242,6 +245,12 @@ export default async function AdminHomePage() {
           <Button variant="secondary">
             <Users className="h-4 w-4 mr-1.5" />
             Gestionar usuarios
+          </Button>
+        </Link>
+        <Link href="/admin/normas">
+          <Button variant="secondary">
+            <BookOpen className="h-4 w-4 mr-1.5" />
+            Editar normas
           </Button>
         </Link>
         <Link href="/dashboard">

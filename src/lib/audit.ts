@@ -14,13 +14,15 @@ export type AuditAction =
   | "USER_ROLE_CHANGED"
   | "SPACE_CREATED"
   | "SPACE_UPDATED"
-  | "SPACE_DEACTIVATED";
+  | "SPACE_DEACTIVATED"
+  | "SETTING_UPDATED";
 
 export type AuditTargetType =
   | "reservation"
   | "blocked_slot"
   | "user"
-  | "space";
+  | "space"
+  | "setting";
 
 interface AuditEntry {
   action: AuditAction;
