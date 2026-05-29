@@ -14,6 +14,7 @@ export type AuditAction =
   | "USER_ROLE_CHANGED"
   | "USER_BANNED"
   | "USER_UNBANNED"
+  | "USER_NAME_CHANGED"
   | "SPACE_CREATED"
   | "SPACE_UPDATED"
   | "SPACE_DEACTIVATED"

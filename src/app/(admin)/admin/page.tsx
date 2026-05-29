@@ -68,6 +68,7 @@ export default async function AdminHomePage() {
     USER_ROLE_CHANGED: "Cambio de rol",
     USER_BANNED: "Usuario suspendido",
     USER_UNBANNED: "Usuario reactivado",
+    USER_NAME_CHANGED: "Nombre actualizado",
     SPACE_CREATED: "Espacio creado",
     SPACE_UPDATED: "Espacio actualizado",
     SPACE_DEACTIVATED: "Espacio desactivado",
