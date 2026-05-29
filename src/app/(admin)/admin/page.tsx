@@ -10,6 +10,7 @@ import {
   ArrowRight,
   ShieldCheck,
   BookOpen,
+  Download,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,6 +70,7 @@ export default async function AdminHomePage() {
     USER_BANNED: "Usuario suspendido",
     USER_UNBANNED: "Usuario reactivado",
     USER_NAME_CHANGED: "Nombre actualizado",
+    EXPORT_CSV: "Exportación CSV",
     SPACE_CREATED: "Espacio creado",
     SPACE_UPDATED: "Espacio actualizado",
     SPACE_DEACTIVATED: "Espacio desactivado",
@@ -196,11 +198,16 @@ export default async function AdminHomePage() {
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5 text-iuce-blue" />
               Audit log reciente
             </CardTitle>
+            <Button variant="ghost" size="sm" asChild className="text-xs">
+              <a href="/api/admin/exports/audit">
+                <Download className="h-3 w-3 mr-1" /> CSV
+              </a>
+            </Button>
           </CardHeader>
           <CardContent>
             {recentAudit.length === 0 ? (

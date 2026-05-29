@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { ArrowLeft, Ban, RefreshCw, ShieldCheck, Users as UsersIcon } from "lucide-react";
+import { ArrowLeft, Ban, Download, RefreshCw, ShieldCheck, Users as UsersIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -154,15 +154,23 @@ export default function AdminUsersPage() {
                 : " · Solo un SUPER_ADMIN puede modificar el rol de otro SUPER_ADMIN"}
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSyncNames}
-            disabled={syncing || loading}
-          >
-            <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${syncing ? "animate-spin" : ""}`} />
-            {syncing ? "Sincronizando..." : "Sincronizar nombres"}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" asChild>
+              <a href="/api/admin/exports/users">
+                <Download className="h-3.5 w-3.5 mr-1.5" />
+                Exportar CSV
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSyncNames}
+              disabled={syncing || loading}
+            >
+              <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${syncing ? "animate-spin" : ""}`} />
+              {syncing ? "Sincronizando..." : "Sincronizar nombres"}
+            </Button>
+          </div>
         </div>
         {lastSync && (
           <div className="mt-3 rounded-md border border-iuce-blue/20 bg-iuce-blue-pale/20 px-3 py-2 text-xs text-gray-700">

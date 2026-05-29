@@ -18,7 +18,8 @@ export type AuditAction =
   | "SPACE_CREATED"
   | "SPACE_UPDATED"
   | "SPACE_DEACTIVATED"
-  | "SETTING_UPDATED";
+  | "SETTING_UPDATED"
+  | "EXPORT_CSV";
 
 export type AuditTargetType =
   | "reservation"
