@@ -3,7 +3,7 @@ import { Building2, Users, ArrowLeft, Download } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { buttonClassName } from "@/components/ui/button";
 import { ReviewActions } from "./review-actions";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -70,12 +70,13 @@ export default async function AdminReservationsPage({
             Aprueba o rechaza las solicitudes pendientes del IUCE.
           </p>
         </div>
-        <Button variant="outline" size="sm" asChild>
-          <a href="/api/admin/exports/reservations">
-            <Download className="h-3.5 w-3.5 mr-1.5" />
-            Exportar CSV
-          </a>
-        </Button>
+        <a
+          href="/api/admin/exports/reservations"
+          className={buttonClassName({ variant: "outline", size: "sm" })}
+        >
+          <Download className="h-3.5 w-3.5 mr-1.5" />
+          Exportar CSV
+        </a>
       </div>
 
       <nav className="mt-6 flex flex-wrap gap-2">

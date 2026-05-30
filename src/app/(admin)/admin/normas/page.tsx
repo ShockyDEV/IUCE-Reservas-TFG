@@ -5,7 +5,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { ArrowLeft, BookOpen, Eye, Save } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClassName } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 const DEFAULT_NORMAS = `# Normas de uso de los espacios del IUCE
@@ -143,12 +143,14 @@ export default function AdminNormasPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/normas" target="_blank">
-              <Eye className="h-3.5 w-3.5 mr-1.5" />
-              Ver página
-            </Link>
-          </Button>
+          <Link
+            href="/normas"
+            target="_blank"
+            className={buttonClassName({ variant: "outline", size: "sm" })}
+          >
+            <Eye className="h-3.5 w-3.5 mr-1.5" />
+            Ver página
+          </Link>
           <Button size="sm" onClick={handleSave} disabled={!dirty || saving}>
             <Save className="h-3.5 w-3.5 mr-1.5" />
             {saving ? "Guardando..." : "Guardar"}

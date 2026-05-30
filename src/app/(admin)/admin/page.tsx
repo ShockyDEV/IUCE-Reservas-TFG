@@ -15,7 +15,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClassName } from "@/components/ui/button";
 
 const MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -203,11 +203,12 @@ export default async function AdminHomePage() {
               <Users className="h-5 w-5 text-iuce-blue" />
               Audit log reciente
             </CardTitle>
-            <Button variant="ghost" size="sm" asChild className="text-xs">
-              <a href="/api/admin/exports/audit">
-                <Download className="h-3 w-3 mr-1" /> CSV
-              </a>
-            </Button>
+            <a
+              href="/api/admin/exports/audit"
+              className={buttonClassName({ variant: "ghost", size: "sm", className: "text-xs" })}
+            >
+              <Download className="h-3 w-3 mr-1" /> CSV
+            </a>
           </CardHeader>
           <CardContent>
             {recentAudit.length === 0 ? (

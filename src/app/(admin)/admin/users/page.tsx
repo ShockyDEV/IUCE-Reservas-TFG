@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { ArrowLeft, Ban, Download, RefreshCw, ShieldCheck, Users as UsersIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClassName } from "@/components/ui/button";
 import { BanToggle } from "./ban-toggle";
 
 type Role = "USER" | "ADMIN" | "SUPER_ADMIN";
@@ -155,12 +155,13 @@ export default function AdminUsersPage() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <a href="/api/admin/exports/users">
-                <Download className="h-3.5 w-3.5 mr-1.5" />
-                Exportar CSV
-              </a>
-            </Button>
+            <a
+              href="/api/admin/exports/users"
+              className={buttonClassName({ variant: "outline", size: "sm" })}
+            >
+              <Download className="h-3.5 w-3.5 mr-1.5" />
+              Exportar CSV
+            </a>
             <Button
               variant="outline"
               size="sm"
