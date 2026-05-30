@@ -240,6 +240,12 @@ export default async function AdminHomePage() {
             Cola de reservas
           </Button>
         </Link>
+        <Link href="/admin/reports">
+          <Button variant="secondary">
+            <ArrowRight className="h-4 w-4 mr-1.5" />
+            Ver estadísticas
+          </Button>
+        </Link>
         <Link href="/admin/spaces">
           <Button variant="secondary">
             <Building2 className="h-4 w-4 mr-1.5" />

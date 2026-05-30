@@ -110,6 +110,8 @@ export async function GET() {
       pending: statusMap.PENDING || 0,
       approved: statusMap.APPROVED || 0,
       rejected: statusMap.REJECTED || 0,
+      cancelled: statusMap.CANCELLED || 0,
+      expired: statusMap.EXPIRED || 0,
     },
     dailyChart: Object.entries(dailyMap).map(([date, data]) => ({
       date,
