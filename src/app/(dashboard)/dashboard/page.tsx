@@ -14,11 +14,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DashboardCalendar } from "@/components/calendar/dashboard-calendar";
+import { CancelButton } from "./cancel-button";
 
 const STATUS_BADGE = {
   PENDING: { label: "Pendiente", variant: "warning" as const },
   APPROVED: { label: "Aprobada", variant: "success" as const },
   REJECTED: { label: "Rechazada", variant: "danger" as const },
+  CANCELLED: { label: "Cancelada", variant: "secondary" as const },
+  EXPIRED: { label: "Expirada", variant: "secondary" as const },
 };
 
 export default async function DashboardPage() {
@@ -144,6 +147,7 @@ export default async function DashboardPage() {
               <ul className="space-y-2">
                 {reservations.map((r) => {
                   const status = STATUS_BADGE[r.status as keyof typeof STATUS_BADGE];
+                  const canCancel = r.status === "PENDING" || r.status === "APPROVED";
                   return (
                     <li
                       key={r.id}
@@ -158,9 +162,14 @@ export default async function DashboardPage() {
                           {dateFmt.format(r.startTime)}
                         </p>
                       </div>
-                      <Badge variant={status?.variant ?? "default"}>
-                        {status?.label ?? r.status}
-                      </Badge>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <Badge variant={status?.variant ?? "default"}>
+                          {status?.label ?? r.status}
+                        </Badge>
+                        {canCancel && (
+                          <CancelButton reservationId={r.id} title={r.title} />
+                        )}
+                      </div>
                     </li>
                   );
                 })}

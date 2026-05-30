@@ -6,6 +6,43 @@ import { updateSpaceSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
 
 /**
+ * GET /api/admin/spaces/[id]
+ *
+ * Devuelve un espacio individual con todos sus campos (incluyendo
+ * `isActive` y el equipamiento ya deserializado). Reservado al rol
+ * administrativo para alimentar el formulario de edición.
+ */
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const guard = await requireAdmin();
+  if (!guard.ok) return guard.response;
+
+  const space = await prisma.space.findUnique({ where: { id: params.id } });
+  if (!space) {
+    return NextResponse.json(
+      { error: "Espacio no encontrado" },
+      { status: 404 }
+    );
+  }
+
+  let equipment: string[] = [];
+  if (Array.isArray(space.equipment)) {
+    equipment = space.equipment as string[];
+  } else if (typeof space.equipment === "string") {
+    try {
+      const parsed = JSON.parse(space.equipment);
+      if (Array.isArray(parsed)) equipment = parsed.filter((e): e is string => typeof e === "string");
+    } catch {
+      equipment = [];
+    }
+  }
+
+  return NextResponse.json({ ...space, equipment });
+}
+
+/**
  * PATCH /api/admin/spaces/[id]
  *
  * Actualiza los campos editables de un espacio. Acepta un subconjunto de

@@ -198,6 +198,51 @@ export async function sendReservationDecisionEmail(
   });
 }
 
+/** Email recordatorio enviado el día anterior a una reserva aprobada. */
+export async function sendReservationReminderEmail(data: ReservationEmailData) {
+  const content = `
+    <h2 style="margin:0 0 8px;color:#111827;font-size:18px;">Recordatorio de reserva</h2>
+    <p style="margin:0 0 16px;color:#6b7280;font-size:14px;line-height:1.6;">
+      Hola ${data.userName}, te recordamos que mañana tienes una reserva confirmada en el IUCE.
+    </p>
+    <div style="display:inline-block;background-color:#EFF8FF;color:#1B3A5C;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;margin-bottom:8px;">
+      Faltan menos de 24 horas
+    </div>
+    ${reservationDetailsBlock(data)}
+    ${buttonBlock("Ver mis reservas", `${APP_URL}/dashboard`)}
+    <p style="margin:0;color:#9ca3af;font-size:12px;">
+      Si ya no necesitas la franja, puedes cancelar la reserva desde el panel para que otras personas puedan reservarla.
+    </p>
+  `;
+
+  return sendEmail({
+    to: data.userEmail,
+    subject: `Recordatorio: ${data.title} mañana`,
+    html: baseTemplate(content, `Recordatorio de tu reserva para ${data.spaceName} mañana.`),
+  });
+}
+
+/** Email enviado al usuario cuando él mismo cancela una reserva. */
+export async function sendReservationCancelledEmail(data: ReservationEmailData) {
+  const content = `
+    <h2 style="margin:0 0 8px;color:#111827;font-size:18px;">Reserva cancelada</h2>
+    <p style="margin:0 0 16px;color:#6b7280;font-size:14px;line-height:1.6;">
+      Hola ${data.userName}, hemos registrado la cancelación de tu reserva. La franja queda libre para que otras personas del IUCE puedan reservarla.
+    </p>
+    <div style="display:inline-block;background-color:#F3F4F6;color:#374151;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;margin-bottom:8px;">
+      Estado: CANCELADA
+    </div>
+    ${reservationDetailsBlock(data)}
+    ${buttonBlock("Ver mis reservas", `${APP_URL}/dashboard`, "#6B7280")}
+  `;
+
+  return sendEmail({
+    to: data.userEmail,
+    subject: `Reserva cancelada: ${data.title}`,
+    html: baseTemplate(content, `Tu reserva para ${data.spaceName} ha sido cancelada.`),
+  });
+}
+
 // ============================================
 // Helper para construir los datos del email a partir de una reserva
 // ============================================

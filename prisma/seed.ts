@@ -1,9 +1,40 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, UserRole } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+interface SeedUser {
+  email: string;
+  name: string;
+  role: UserRole;
+}
+
+const SEED_USERS: SeedUser[] = [
+  { email: "iuce.tecnico@usal.es", name: "IUCE — Soporte Técnico", role: "SUPER_ADMIN" },
+  { email: "solmos@usal.es", name: "S. Olmos", role: "USER" },
+  { email: "fgarcia@usal.es", name: "F. García", role: "USER" },
+  { email: "aliciagh@usal.es", name: "Alicia G. H.", role: "USER" },
+  { email: "mjrconde@usal.es", name: "M. J. R. Conde", role: "USER" },
+];
+
 async function main() {
   console.log("Seeding database...");
+
+  // Usuarios base para que el grupo IUCE pueda probar el sistema sin tener
+  // que registrarse uno a uno. `upsert` mantiene la idempotencia: si el
+  // usuario ya existe no se sobrescribe su nombre actual (puede haberlo
+  // editado vía /perfil) ni su rol (puede haber sido promovido).
+  for (const u of SEED_USERS) {
+    await prisma.user.upsert({
+      where: { email: u.email },
+      update: {},
+      create: {
+        email: u.email,
+        name: u.name,
+        role: u.role,
+      },
+    });
+  }
+  console.log(`Asegurados ${SEED_USERS.length} usuarios @usal.es`);
 
   // Limpiamos los espacios previos para garantizar idempotencia
   await prisma.space.deleteMany();
@@ -96,6 +127,11 @@ async function main() {
   ]);
 
   console.log(`Insertados ${spaces.length} espacios`);
+  console.log("");
+  console.log("Cuentas de prueba @usal.es:");
+  SEED_USERS.forEach((u) => {
+    console.log(`  · ${u.email.padEnd(28)} ${u.role}`);
+  });
 }
 
 main()

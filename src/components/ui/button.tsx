@@ -49,4 +49,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = "Button";
 
+/**
+ * Helper para enlaces con apariencia de botón. Útil para descargas y
+ * navegaciones externas donde queremos un anchor (`<a>`) con los estilos
+ * del botón sin recurrir al patrón `asChild`.
+ */
+type ButtonVariantsParams = Parameters<typeof buttonVariants>[0];
+export const buttonClassName = (options: ButtonVariantsParams = {}) =>
+  buttonVariants(options);
+
 export { Button, buttonVariants };

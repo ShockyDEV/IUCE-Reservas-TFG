@@ -17,16 +17,21 @@ enum ReservationStatus {
   PENDING
   APPROVED
   REJECTED
+  CANCELLED
+  EXPIRED
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String
-  role          UserRole  @default(USER)
-  image         String?
-  createdAt     DateTime  @default(now())
-  lastLogin     DateTime?
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String
+  role             UserRole  @default(USER)
+  image            String?
+  profileCompleted Boolean   @default(false)
+  isBanned         Boolean   @default(false)
+  banReason        String?
+  createdAt        DateTime  @default(now())
+  lastLogin        DateTime?
 
   accounts     Account[]
   sessions     Session[]
@@ -105,6 +110,12 @@ model BlockedSlot {
   createdBy   User   @relation(fields: [createdById], references: [id])
 
   @@index([spaceId, startTime, endTime])
+}
+
+model SiteSetting {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
 }
 
 model AuditLog {

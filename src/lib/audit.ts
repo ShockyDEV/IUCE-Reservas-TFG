@@ -8,18 +8,25 @@ import { prisma } from "@/lib/prisma";
 export type AuditAction =
   | "RESERVATION_APPROVED"
   | "RESERVATION_REJECTED"
+  | "RESERVATION_CANCELLED"
   | "BLOCKED_SLOT_CREATED"
   | "BLOCKED_SLOT_DELETED"
   | "USER_ROLE_CHANGED"
+  | "USER_BANNED"
+  | "USER_UNBANNED"
+  | "USER_NAME_CHANGED"
   | "SPACE_CREATED"
   | "SPACE_UPDATED"
-  | "SPACE_DEACTIVATED";
+  | "SPACE_DEACTIVATED"
+  | "SETTING_UPDATED"
+  | "EXPORT_CSV";
 
 export type AuditTargetType =
   | "reservation"
   | "blocked_slot"
   | "user"
-  | "space";
+  | "space"
+  | "setting";
 
 interface AuditEntry {
   action: AuditAction;

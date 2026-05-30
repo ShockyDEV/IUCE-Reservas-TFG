@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Building2, Users, ArrowLeft } from "lucide-react";
+import { Building2, Users, ArrowLeft, Download } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { buttonClassName } from "@/components/ui/button";
 import { ReviewActions } from "./review-actions";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -59,14 +60,23 @@ export default async function AdminReservationsPage({
         Volver al panel
       </Link>
 
-      <div className="mt-6">
-        <Badge variant="danger">Administración</Badge>
-        <h1 className="mt-3 text-3xl font-bold text-gray-900">
-          Gestión de solicitudes de reserva
-        </h1>
-        <p className="mt-2 text-sm text-gray-500">
-          Aprueba o rechaza las solicitudes pendientes del IUCE.
-        </p>
+      <div className="mt-6 flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <Badge variant="danger">Administración</Badge>
+          <h1 className="mt-3 text-3xl font-bold text-gray-900">
+            Gestión de solicitudes de reserva
+          </h1>
+          <p className="mt-2 text-sm text-gray-500">
+            Aprueba o rechaza las solicitudes pendientes del IUCE.
+          </p>
+        </div>
+        <a
+          href="/api/admin/exports/reservations"
+          className={buttonClassName({ variant: "outline", size: "sm" })}
+        >
+          <Download className="h-3.5 w-3.5 mr-1.5" />
+          Exportar CSV
+        </a>
       </div>
 
       <nav className="mt-6 flex flex-wrap gap-2">
@@ -159,11 +169,19 @@ export default async function AdminReservationsPage({
                       </Badge>
                     </td>
                     <td className="px-4 py-3 align-top text-right">
-                      {r.status === "PENDING" ? (
-                        <ReviewActions reservationId={r.id} />
-                      ) : (
-                        <span className="text-xs text-gray-400">—</span>
-                      )}
+                      <div className="flex flex-col items-end gap-1">
+                        {r.status === "PENDING" ? (
+                          <ReviewActions reservationId={r.id} />
+                        ) : (
+                          <span className="text-xs text-gray-400">—</span>
+                        )}
+                        <Link
+                          href={`/admin/reservations/${r.id}`}
+                          className="text-[11px] text-iuce-blue hover:underline"
+                        >
+                          Ver detalle →
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}

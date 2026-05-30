@@ -9,11 +9,13 @@ import {
   Users,
   ArrowRight,
   ShieldCheck,
+  BookOpen,
+  Download,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClassName } from "@/components/ui/button";
 
 const MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -61,12 +63,18 @@ export default async function AdminHomePage() {
   const actionLabel: Record<string, string> = {
     RESERVATION_APPROVED: "Reserva aprobada",
     RESERVATION_REJECTED: "Reserva rechazada",
+    RESERVATION_CANCELLED: "Reserva cancelada",
     BLOCKED_SLOT_CREATED: "Bloqueo creado",
     BLOCKED_SLOT_DELETED: "Bloqueo eliminado",
     USER_ROLE_CHANGED: "Cambio de rol",
+    USER_BANNED: "Usuario suspendido",
+    USER_UNBANNED: "Usuario reactivado",
+    USER_NAME_CHANGED: "Nombre actualizado",
+    EXPORT_CSV: "Exportación CSV",
     SPACE_CREATED: "Espacio creado",
     SPACE_UPDATED: "Espacio actualizado",
     SPACE_DEACTIVATED: "Espacio desactivado",
+    SETTING_UPDATED: "Configuración actualizada",
   };
 
   return (
@@ -190,11 +198,17 @@ export default async function AdminHomePage() {
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5 text-iuce-blue" />
               Audit log reciente
             </CardTitle>
+            <a
+              href="/api/admin/exports/audit"
+              className={buttonClassName({ variant: "ghost", size: "sm", className: "text-xs" })}
+            >
+              <Download className="h-3 w-3 mr-1" /> CSV
+            </a>
           </CardHeader>
           <CardContent>
             {recentAudit.length === 0 ? (
@@ -226,6 +240,12 @@ export default async function AdminHomePage() {
             Cola de reservas
           </Button>
         </Link>
+        <Link href="/admin/reports">
+          <Button variant="secondary">
+            <ArrowRight className="h-4 w-4 mr-1.5" />
+            Ver estadísticas
+          </Button>
+        </Link>
         <Link href="/admin/spaces">
           <Button variant="secondary">
             <Building2 className="h-4 w-4 mr-1.5" />
@@ -242,6 +262,12 @@ export default async function AdminHomePage() {
           <Button variant="secondary">
             <Users className="h-4 w-4 mr-1.5" />
             Gestionar usuarios
+          </Button>
+        </Link>
+        <Link href="/admin/normas">
+          <Button variant="secondary">
+            <BookOpen className="h-4 w-4 mr-1.5" />
+            Editar normas
           </Button>
         </Link>
         <Link href="/dashboard">

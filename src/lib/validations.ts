@@ -143,7 +143,9 @@ export const createSpaceSchema = z.object({
   imageUrl: z.string().max(300).optional(),
 });
 
-export const updateSpaceSchema = createSpaceSchema.partial();
+export const updateSpaceSchema = createSpaceSchema.partial().extend({
+  isActive: z.boolean().optional(),
+});
 
 export type CreateReservationInput = z.infer<typeof createReservationSchema>;
 export type ReviewReservationInput = z.infer<typeof reviewReservationSchema>;

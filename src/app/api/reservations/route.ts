@@ -46,6 +46,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
+  // Bloqueo por suspensión administrativa: los usuarios banneados no pueden
+  // crear nuevas reservas. Se devuelve el motivo registrado para que la UI
+  // pueda mostrarlo.
+  const me = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isBanned: true, banReason: true },
+  });
+  if (me?.isBanned) {
+    return NextResponse.json(
+      {
+        error:
+          "Tu cuenta ha sido suspendida temporalmente. Contacta con la administración del IUCE para más información.",
+        banReason: me.banReason || null,
+      },
+      { status: 403 }
+    );
+  }
+
   const body = await req.json().catch(() => null);
   const parsed = createReservationSchema.safeParse(body);
 
