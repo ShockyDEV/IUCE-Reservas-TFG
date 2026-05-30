@@ -169,11 +169,19 @@ export default async function AdminReservationsPage({
                       </Badge>
                     </td>
                     <td className="px-4 py-3 align-top text-right">
-                      {r.status === "PENDING" ? (
-                        <ReviewActions reservationId={r.id} />
-                      ) : (
-                        <span className="text-xs text-gray-400">—</span>
-                      )}
+                      <div className="flex flex-col items-end gap-1">
+                        {r.status === "PENDING" ? (
+                          <ReviewActions reservationId={r.id} />
+                        ) : (
+                          <span className="text-xs text-gray-400">—</span>
+                        )}
+                        <Link
+                          href={`/admin/reservations/${r.id}`}
+                          className="text-[11px] text-iuce-blue hover:underline"
+                        >
+                          Ver detalle →
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}
