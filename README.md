@@ -267,7 +267,7 @@ El proyecto se organiza en 10 sprints (14 abril – 5 junio 2026) y 11 épicas (
 - [x] **Sprint 5** · Recurrencia y BlockedSlot *(11-15 may)*
 - [x] **Sprint 6** · Panel Admin y Audit *(16-20 may)*
 - [x] **Sprint 7** · UX y Mobile *(21-25 may)*
-- [ ] **Sprint 8** · DevOps y Despliegue *(26-30 may)*
+- [ ] **Sprint 8** · Funcionalidades finales y Despliegue *(26-30 may)*
 - [ ] **Sprint 9** · QA y Release *(31 may - 5 jun)*
 
 <details>
@@ -299,6 +299,7 @@ Cada cierre de hito relevante del proyecto se publica como una **release** versi
 
 | Versión | Estado | Fecha | Contenido principal |
 |---------|--------|-------|---------------------|
+| [`v0.2.0`](https://github.com/ShockyDEV/IUCE-Reservas-TFG/releases/tag/v0.2.0) | Pre-release | 26 mayo 2026 | Cierre de Sprints 5-7: bloqueos administrativos, reservas recurrentes, panel admin completo con audit log, refinado UX y mobile, suite de tests con Vitest y SonarCloud Quality Gate **Passed**. |
 | [`v0.1.0`](https://github.com/ShockyDEV/IUCE-Reservas-TFG/releases/tag/v0.1.0) | Pre-release | 11 mayo 2026 | Cierre de Sprints 1-4: autenticación con magic link, catálogo de espacios, motor de reservas y flujo de aprobación administrativa con notificaciones por email. |
 
 ---
