@@ -16,6 +16,11 @@ const MOCK_USERS = [
   { email: "admin@usal.es", name: "María García López", role: "Admin", color: "bg-usal-red" },
   { email: "investigador1@usal.es", name: "Ana Fernández Ruiz", role: "Usuario", color: "bg-iuce-blue" },
   { email: "superadmin@usal.es", name: "Carlos Rodríguez Martín", role: "Super Admin", color: "bg-iuce-blue-dark" },
+  { email: "iuce.tecnico@usal.es", name: "IUCE — Soporte Técnico", role: "Super Admin", color: "bg-iuce-blue-dark" },
+  { email: "solmos@usal.es", name: "S. Olmos", role: "Usuario", color: "bg-iuce-blue" },
+  { email: "fgarcia@usal.es", name: "F. García", role: "Usuario", color: "bg-iuce-blue" },
+  { email: "aliciagh@usal.es", name: "Alicia G. H.", role: "Usuario", color: "bg-iuce-blue" },
+  { email: "mjrconde@usal.es", name: "M. J. R. Conde", role: "Usuario", color: "bg-iuce-blue" },
 ];
 
 export default function SignInPage() {
