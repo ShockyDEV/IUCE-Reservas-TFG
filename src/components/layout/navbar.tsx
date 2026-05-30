@@ -4,7 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
-import { CalendarDays, Building2, ShieldCheck, Menu, X, LogOut } from "lucide-react";
+import {
+  CalendarDays,
+  Building2,
+  ShieldCheck,
+  Menu,
+  X,
+  LogOut,
+  CalendarCheck,
+  BookOpen,
+  User as UserIcon,
+} from "lucide-react";
 import { cn } from "@/lib/cn";
 import { NotificationDropdown } from "@/components/layout/notification-dropdown";
 
@@ -17,6 +27,12 @@ interface NavbarProps {
 const PUBLIC_ITEMS = [
   { href: "/dashboard", label: "Panel", icon: CalendarDays },
   { href: "/spaces", label: "Espacios", icon: Building2 },
+  { href: "/reservations", label: "Mis reservas", icon: CalendarCheck },
+  { href: "/normas", label: "Normas", icon: BookOpen },
+];
+
+const USER_MENU_ITEMS = [
+  { href: "/perfil", label: "Mi perfil", icon: UserIcon },
 ];
 
 function isAdmin(role: Role): boolean {
@@ -69,10 +85,16 @@ export function Navbar({ user }: NavbarProps) {
 
         <div className="hidden md:flex items-center gap-4">
           <NotificationDropdown />
-          <div className="text-right leading-tight">
-            <p className="text-sm font-medium text-gray-900">{user.name}</p>
+          <Link
+            href="/perfil"
+            className="text-right leading-tight group"
+            title="Editar mi perfil"
+          >
+            <p className="text-sm font-medium text-gray-900 group-hover:text-iuce-blue transition-colors">
+              {user.name}
+            </p>
             <p className="text-xs text-gray-500">{user.email}</p>
-          </div>
+          </Link>
           <button
             type="button"
             onClick={() => signOut({ callbackUrl: "/" })}
@@ -124,8 +146,22 @@ export function Navbar({ user }: NavbarProps) {
               Administración
             </Link>
           )}
-          <div className="mt-3 border-t border-gray-100 pt-3">
-            <p className="px-3 text-sm font-medium text-gray-900">{user.name}</p>
+          <div className="mt-3 border-t border-gray-100 pt-3 space-y-1">
+            {USER_MENU_ITEMS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </Link>
+              );
+            })}
+            <p className="px-3 pt-2 text-sm font-medium text-gray-900">{user.name}</p>
             <p className="px-3 text-xs text-gray-500">{user.email}</p>
             <button
               type="button"
