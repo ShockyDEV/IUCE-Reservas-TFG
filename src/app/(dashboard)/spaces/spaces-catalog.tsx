@@ -34,7 +34,8 @@ export function SpacesCatalog({ spaces, equipmentOptions }: Readonly<SpacesCatal
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const initialCapacity = Number(searchParams.get("capacity")) || 0;
+  const initialCapacity =
+    Number.parseInt(searchParams.get("capacity") ?? "0", 10) || 0;
   const initialAccessibility = searchParams.get("accessibility") === "1";
   const initialEquipment = (searchParams.get("equipment") || "")
     .split(",")
