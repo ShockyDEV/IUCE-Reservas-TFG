@@ -136,7 +136,7 @@ export default function AdminSpacesPage() {
                       </span>
                       <span>·</span>
                       <span>{s.building}</span>
-                      {s.floor != null && (
+                      {s.floor !== null && s.floor !== undefined && (
                         <>
                           <span>·</span>
                           <span>P{s.floor}</span>
