@@ -91,8 +91,11 @@ export function NotificationDropdown() {
   };
 
   const handleMarkAllRead = () => {
-    const allIds = new Set(notifications.map((n) => n.id));
-    setReadIds((prev) => new Set([...Array.from(prev), ...Array.from(allIds)]));
+    setReadIds((prev) => {
+      const next = new Set(prev);
+      for (const n of notifications) next.add(n.id);
+      return next;
+    });
     setCount(0);
   };
 
