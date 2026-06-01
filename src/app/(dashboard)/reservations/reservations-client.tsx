@@ -103,12 +103,13 @@ export function ReservationsClient({
         <CardContent className="p-4 sm:p-5 space-y-4">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="lg:col-span-2">
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <label htmlFor="reservations-search" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Buscar por título
               </label>
               <div className="mt-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
+                  id="reservations-search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Reunión de claustro, formación, ..."
@@ -117,10 +118,11 @@ export function ReservationsClient({
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <label htmlFor="reservations-date-from" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Desde
               </label>
               <Input
+                id="reservations-date-from"
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
@@ -128,10 +130,11 @@ export function ReservationsClient({
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <label htmlFor="reservations-date-to" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Hasta
               </label>
               <Input
+                id="reservations-date-to"
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
