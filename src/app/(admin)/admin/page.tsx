@@ -16,6 +16,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
+import { getAuditActionLabel } from "@/lib/format";
 
 const MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -59,23 +60,6 @@ export default async function AdminHomePage() {
     dateStyle: "medium",
     timeStyle: "short",
   });
-
-  const actionLabel: Record<string, string> = {
-    RESERVATION_APPROVED: "Reserva aprobada",
-    RESERVATION_REJECTED: "Reserva rechazada",
-    RESERVATION_CANCELLED: "Reserva cancelada",
-    BLOCKED_SLOT_CREATED: "Bloqueo creado",
-    BLOCKED_SLOT_DELETED: "Bloqueo eliminado",
-    USER_ROLE_CHANGED: "Cambio de rol",
-    USER_BANNED: "Usuario suspendido",
-    USER_UNBANNED: "Usuario reactivado",
-    USER_NAME_CHANGED: "Nombre actualizado",
-    EXPORT_CSV: "Exportación CSV",
-    SPACE_CREATED: "Espacio creado",
-    SPACE_UPDATED: "Espacio actualizado",
-    SPACE_DEACTIVATED: "Espacio desactivado",
-    SETTING_UPDATED: "Configuración actualizada",
-  };
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
@@ -220,7 +204,7 @@ export default async function AdminHomePage() {
                 {recentAudit.map((entry) => (
                   <li key={entry.id} className="border-l-2 border-iuce-blue pl-3">
                     <p className="font-medium text-gray-900">
-                      {actionLabel[entry.action] ?? entry.action}
+                      {getAuditActionLabel(entry.action)}
                     </p>
                     <p className="text-xs text-gray-500">
                       {entry.user.name} · {dateFmt.format(entry.createdAt)}
