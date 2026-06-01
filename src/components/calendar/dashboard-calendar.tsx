@@ -33,9 +33,17 @@ function isSameDay(a: Date, b: Date): boolean {
  * alguna reserva del usuario.
  */
 export function DashboardCalendar({ reservations = [] }: Readonly<DashboardCalendarProps>) {
-  const today = new Date();
-  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-  const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  // `today` se memoriza para que las dependencias de los useMemo siguientes
+  // sean estables entre renders (regla react-hooks/exhaustive-deps).
+  const today = useMemo(() => new Date(), []);
+  const monthStart = useMemo(
+    () => new Date(today.getFullYear(), today.getMonth(), 1),
+    [today],
+  );
+  const monthEnd = useMemo(
+    () => new Date(today.getFullYear(), today.getMonth() + 1, 0),
+    [today],
+  );
 
   const offset = (monthStart.getDay() + 6) % 7;
   const cells = useMemo(() => {
