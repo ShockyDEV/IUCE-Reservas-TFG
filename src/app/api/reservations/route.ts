@@ -14,6 +14,7 @@ import {
   sendNewRequestToAdminEmail,
   buildReservationEmailData,
 } from "@/lib/email";
+import { checkRateLimit, RESERVATION_RATE_LIMIT } from "@/lib/rate-limit";
 
 export async function GET(req: NextRequest) {
   const session = await auth();
@@ -44,6 +45,24 @@ export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
+  // Rate limit por usuario: máximo 10 reservas/hora. Evita disparos
+  // accidentales desde scripts y abuso por parte de cuentas legítimas.
+  const rate = checkRateLimit(session.user.id, RESERVATION_RATE_LIMIT);
+  if (!rate.allowed) {
+    const retryAfter = Math.max(1, Math.ceil((rate.resetAt - Date.now()) / 1000));
+    return NextResponse.json(
+      {
+        error:
+          "Has alcanzado el límite de 10 reservas por hora. Espera un poco antes de volver a solicitar.",
+        retryAfter,
+      },
+      {
+        status: 429,
+        headers: { "Retry-After": String(retryAfter) },
+      }
+    );
   }
 
   // Bloqueo por suspensión administrativa: los usuarios banneados no pueden
