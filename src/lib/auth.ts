@@ -27,7 +27,7 @@ function getDefaultRole(email: string): "USER" | "ADMIN" | "SUPER_ADMIN" {
 function formatNameFromEmail(email: string): string {
   const prefix = email.split("@")[0];
   return prefix
-    .replace(/[._-]/g, " ")
+    .replaceAll(/[._-]/g, " ")
     .split(" ")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(" ");

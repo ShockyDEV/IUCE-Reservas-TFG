@@ -63,11 +63,11 @@ function renderMarkdown(md: string): string {
     } else if (trimmed === "") {
       closeParagraph();
     } else {
-      if (!inParagraph) {
+      if (inParagraph) {
+        html += " ";
+      } else {
         html += '<p class="text-sm text-gray-600 leading-relaxed mb-2">';
         inParagraph = true;
-      } else {
-        html += " ";
       }
       html += trimmed;
     }

@@ -347,9 +347,9 @@ export function SpaceForm({ initialValues, mode }: Readonly<SpaceFormProps>) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <span className="block text-sm font-medium text-gray-700 mb-1.5">
               Color identificativo
-            </label>
+            </span>
             <div className="flex flex-wrap gap-2">
               {PRESET_COLORS.map((c) => (
                 <button
@@ -371,6 +371,7 @@ export function SpaceForm({ initialValues, mode }: Readonly<SpaceFormProps>) {
                 onChange={(e) => setForm({ ...form, color: e.target.value })}
                 className="h-8 w-12 rounded border border-gray-200 cursor-pointer"
                 title="Color personalizado"
+                aria-label="Color personalizado"
               />
             </div>
           </div>

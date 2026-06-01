@@ -88,10 +88,14 @@ export function BanToggle({ userId, userName, isBanned, banReason, onChange }: R
             <div className="px-5 py-4 space-y-3">
               {!isBanned && (
                 <div>
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <label
+                    htmlFor="ban-reason"
+                    className="text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Motivo (mínimo 5 caracteres)
                   </label>
                   <Textarea
+                    id="ban-reason"
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                     rows={3}
