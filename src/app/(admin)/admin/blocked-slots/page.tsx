@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import {
@@ -58,7 +58,7 @@ export default function BlockedSlotsPage() {
     endTime: "21:00",
   });
 
-  const fetchSlots = () => {
+  const fetchSlots = useCallback(() => {
     const url = filterSpace
       ? `/api/admin/blocked-slots?spaceId=${filterSpace}`
       : "/api/admin/blocked-slots";
@@ -70,7 +70,7 @@ export default function BlockedSlotsPage() {
         console.warn("blocked-slots fetch failed", err);
       })
       .finally(() => setLoading(false));
-  };
+  }, [filterSpace]);
 
   useEffect(() => {
     fetch("/api/spaces")
@@ -90,12 +90,12 @@ export default function BlockedSlotsPage() {
         console.warn("spaces fetch failed", err);
       });
     fetchSlots();
-  }, []);
+  }, [fetchSlots]);
 
   useEffect(() => {
     setLoading(true);
     fetchSlots();
-  }, [filterSpace]);
+  }, [fetchSlots]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
