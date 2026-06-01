@@ -117,7 +117,9 @@ export function SpacesCatalog({ spaces, equipmentOptions }: Readonly<SpacesCatal
                   max={100}
                   step={5}
                   value={minCapacity}
-                  onChange={(e) => setMinCapacity(Number(e.target.value))}
+                  onChange={(e) =>
+                    setMinCapacity(Number.parseInt(e.target.value, 10) || 0)
+                  }
                   className="flex-1 accent-iuce-blue"
                 />
                 <Input
@@ -125,7 +127,9 @@ export function SpacesCatalog({ spaces, equipmentOptions }: Readonly<SpacesCatal
                   min={0}
                   max={500}
                   value={minCapacity}
-                  onChange={(e) => setMinCapacity(Number(e.target.value) || 0)}
+                  onChange={(e) =>
+                    setMinCapacity(Number.parseInt(e.target.value, 10) || 0)
+                  }
                   className="h-9 w-20 text-xs"
                 />
               </div>
