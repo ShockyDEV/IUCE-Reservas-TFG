@@ -20,9 +20,9 @@ const STATUS_VARIANT: Record<string, "warning" | "success" | "danger" | "default
 
 export default async function AdminReservationsPage({
   searchParams,
-}: {
+}: Readonly<{
   searchParams: { status?: string };
-}) {
+}>) {
   const status = searchParams.status?.toUpperCase();
   const validStatus =
     status === "PENDING" || status === "APPROVED" || status === "REJECTED"

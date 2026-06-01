@@ -39,7 +39,7 @@ function isAdmin(role: Role): boolean {
   return role === "ADMIN" || role === "SUPER_ADMIN";
 }
 
-export function Navbar({ user }: NavbarProps) {
+export function Navbar({ user }: Readonly<NavbarProps>) {
   const [open, setOpen] = useState(false);
 
   return (

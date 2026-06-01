@@ -13,9 +13,9 @@ export const metadata = { title: "Detalle del espacio" };
 
 export default async function SpaceDetailPage({
   params,
-}: {
+}: Readonly<{
   params: { id: string };
-}) {
+}>) {
   const session = await auth();
   if (!session?.user) redirect("/auth/signin");
 

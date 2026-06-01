@@ -31,7 +31,7 @@ function isSameDay(a: Date, b: Date): boolean {
  * curso con un punto del color del espacio bajo cada día que contiene
  * alguna reserva del usuario.
  */
-export function DashboardCalendar({ reservations = [] }: DashboardCalendarProps) {
+export function DashboardCalendar({ reservations = [] }: Readonly<DashboardCalendarProps>) {
   const today = new Date();
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
   const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);

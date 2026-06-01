@@ -14,7 +14,7 @@ interface BanToggleProps {
   onChange: (next: { isBanned: boolean; banReason: string | null }) => void;
 }
 
-export function BanToggle({ userId, userName, isBanned, banReason, onChange }: BanToggleProps) {
+export function BanToggle({ userId, userName, isBanned, banReason, onChange }: Readonly<BanToggleProps>) {
   const [modalOpen, setModalOpen] = useState(false);
   const [reason, setReason] = useState(banReason || "");
   const [saving, setSaving] = useState(false);

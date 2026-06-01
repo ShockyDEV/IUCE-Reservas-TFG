@@ -58,7 +58,7 @@ export function WeekCalendar({
   blockedSlots = [],
   startHour = 8,
   endHour = 21,
-}: WeekCalendarProps) {
+}: Readonly<WeekCalendarProps>) {
   const [anchorDate, setAnchorDate] = useState(() => new Date());
 
   const weekStart = useMemo(() => startOfWeek(anchorDate), [anchorDate]);

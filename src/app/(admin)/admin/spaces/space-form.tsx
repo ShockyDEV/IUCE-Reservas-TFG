@@ -46,7 +46,7 @@ interface SpaceFormProps {
   mode: "create" | "edit";
 }
 
-export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
+export function SpaceForm({ initialValues, mode }: Readonly<SpaceFormProps>) {
   const router = useRouter();
   const [form, setForm] = useState<SpaceFormValues>(initialValues);
   const [equipmentInput, setEquipmentInput] = useState("");
@@ -215,7 +215,7 @@ export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    capacity: parseInt(e.target.value) || 1,
+                    capacity: Number.parseInt(e.target.value, 10) || 1,
                   })
                 }
                 required
@@ -229,7 +229,7 @@ export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
                 type="number"
                 value={form.floor}
                 onChange={(e) =>
-                  setForm({ ...form, floor: parseInt(e.target.value) || 0 })
+                  setForm({ ...form, floor: Number.parseInt(e.target.value, 10) || 0 })
                 }
               />
             </div>

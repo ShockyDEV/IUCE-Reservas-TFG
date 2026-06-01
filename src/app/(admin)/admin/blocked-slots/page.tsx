@@ -367,21 +367,28 @@ export default function BlockedSlotsPage() {
         </span>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600" />
-        </div>
-      ) : slots.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center py-12 text-center">
-            <CalendarOff className="h-8 w-8 text-gray-300 mb-3" />
-            <p className="text-sm text-gray-500">No hay bloqueos activos</p>
-            <p className="text-xs text-gray-400 mt-1">
-              Los bloqueos pasados se eliminan automáticamente de la vista.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
+      {(() => {
+        if (loading) {
+          return (
+            <div className="flex justify-center py-12">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600" />
+            </div>
+          );
+        }
+        if (slots.length === 0) {
+          return (
+            <Card>
+              <CardContent className="flex flex-col items-center py-12 text-center">
+                <CalendarOff className="h-8 w-8 text-gray-300 mb-3" />
+                <p className="text-sm text-gray-500">No hay bloqueos activos</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Los bloqueos pasados se eliminan automáticamente de la vista.
+                </p>
+              </CardContent>
+            </Card>
+          );
+        }
+        return (
         <div className="space-y-2">
           {slots.map((slot) => (
             <Card key={slot.id} className="overflow-hidden">
@@ -434,7 +441,8 @@ export default function BlockedSlotsPage() {
             </Card>
           ))}
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

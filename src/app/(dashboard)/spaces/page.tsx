@@ -51,7 +51,9 @@ export default async function SpacesPage() {
   // de espacios sin tener que tocar código.
   const equipmentSet = new Set<string>();
   spaces.forEach((s) => s.equipment.forEach((eq) => equipmentSet.add(eq)));
-  const equipmentOptions = Array.from(equipmentSet).sort();
+  const equipmentOptions = Array.from(equipmentSet).sort((a, b) =>
+    a.localeCompare(b, "es", { sensitivity: "base" }),
+  );
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10">

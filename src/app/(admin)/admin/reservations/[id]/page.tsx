@@ -41,9 +41,9 @@ const dateTimeFmt = new Intl.DateTimeFormat("es-ES", {
 
 export default async function AdminReservationDetailPage({
   params,
-}: {
+}: Readonly<{
   params: { id: string };
-}) {
+}>) {
   const session = await auth();
   if (!session?.user) redirect("/auth/signin");
 

@@ -301,7 +301,7 @@ export default function NewReservationPage() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    attendees: parseInt(e.target.value) || 1,
+                    attendees: Number.parseInt(e.target.value, 10) || 1,
                   })
                 }
                 className="w-32"

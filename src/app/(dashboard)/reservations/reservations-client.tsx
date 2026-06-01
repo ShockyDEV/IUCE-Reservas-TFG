@@ -58,9 +58,9 @@ const dayFmt = new Intl.DateTimeFormat("es-ES", {
 
 export function ReservationsClient({
   reservations,
-}: {
+}: Readonly<{
   reservations: ReservationRow[];
-}) {
+}>) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [dateFrom, setDateFrom] = useState("");

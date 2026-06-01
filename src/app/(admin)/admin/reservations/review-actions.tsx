@@ -7,7 +7,7 @@ import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-export function ReviewActions({ reservationId }: { reservationId: string }) {
+export function ReviewActions({ reservationId }: Readonly<{ reservationId: string }>) {
   const router = useRouter();
   const [loading, setLoading] = useState<"APPROVED" | "REJECTED" | null>(null);
   const [rejectMode, setRejectMode] = useState(false);

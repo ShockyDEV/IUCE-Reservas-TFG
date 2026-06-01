@@ -30,7 +30,7 @@ interface SpacesCatalogProps {
   equipmentOptions: string[];
 }
 
-export function SpacesCatalog({ spaces, equipmentOptions }: SpacesCatalogProps) {
+export function SpacesCatalog({ spaces, equipmentOptions }: Readonly<SpacesCatalogProps>) {
   const router = useRouter();
   const searchParams = useSearchParams();
 

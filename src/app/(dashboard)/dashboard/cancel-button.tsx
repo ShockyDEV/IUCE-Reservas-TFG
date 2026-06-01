@@ -11,7 +11,7 @@ interface CancelButtonProps {
   title: string;
 }
 
-export function CancelButton({ reservationId, title }: CancelButtonProps) {
+export function CancelButton({ reservationId, title }: Readonly<CancelButtonProps>) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 

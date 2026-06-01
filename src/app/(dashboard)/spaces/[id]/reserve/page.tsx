@@ -27,7 +27,7 @@ interface Space {
   color?: string;
 }
 
-export default function ReservePage({ params }: { params: { id: string } }) {
+export default function ReservePage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
   const [space, setSpace] = useState<Space | null>(null);
   const [loading, setLoading] = useState(false);

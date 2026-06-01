@@ -37,9 +37,9 @@ Si no puedes utilizar un espacio reservado, cancela tu reserva lo antes posible.
  */
 function renderMarkdown(md: string): string {
   const escaped = md
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 
   const lines = escaped.split(/\r?\n/);
   let html = "";

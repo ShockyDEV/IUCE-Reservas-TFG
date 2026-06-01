@@ -62,7 +62,7 @@ export function escapeCsvField(value: unknown): string {
   const str = String(value);
   const needsQuoting = /[",\r\n]/.test(str);
   if (!needsQuoting) return str;
-  return `"${str.replace(/"/g, '""')}"`;
+  return `"${str.replaceAll('"', '""')}"`;
 }
 
 /** Construye un CSV a partir de cabecera + filas. Prepende BOM para Excel. */
