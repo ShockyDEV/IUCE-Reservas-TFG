@@ -65,7 +65,10 @@ export default function BlockedSlotsPage() {
     fetch(url)
       .then((r) => r.json())
       .then(setSlots)
-      .catch(() => {})
+      .catch((err) => {
+        // Si el listado falla mostramos vacio (el spinner cierra abajo).
+        console.warn("blocked-slots fetch failed", err);
+      })
       .finally(() => setLoading(false));
   };
 
@@ -82,7 +85,10 @@ export default function BlockedSlotsPage() {
           }))
         );
       })
-      .catch(() => {});
+      .catch((err) => {
+        // Sin espacios solo se desactiva el selector; no bloqueamos la pagina.
+        console.warn("spaces fetch failed", err);
+      });
     fetchSlots();
   }, []);
 

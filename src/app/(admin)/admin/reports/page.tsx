@@ -70,7 +70,10 @@ export default function AdminReportsPage() {
     fetch("/api/admin/stats")
       .then((r) => r.json())
       .then((data) => setStats(data))
-      .catch(() => {})
+      .catch((err) => {
+        // Si el endpoint falla la pagina renderiza el estado "sin datos".
+        console.warn("admin/stats fetch failed", err);
+      })
       .finally(() => setLoading(false));
   }, []);
 

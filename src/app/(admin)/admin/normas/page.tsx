@@ -89,7 +89,10 @@ export default function AdminNormasPage() {
           setContent(data.value);
         }
       })
-      .catch(() => {})
+      .catch((err) => {
+        // Si no se pueden cargar las normas guardadas mantenemos el default.
+        console.warn("normas_rules fetch failed", err);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -146,6 +149,7 @@ export default function AdminNormasPage() {
           <Link
             href="/normas"
             target="_blank"
+            rel="noopener noreferrer"
             className={buttonClassName({ variant: "outline", size: "sm" })}
           >
             <Eye className="h-3.5 w-3.5 mr-1.5" />
