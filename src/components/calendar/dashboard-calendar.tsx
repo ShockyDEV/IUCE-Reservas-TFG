@@ -39,7 +39,7 @@ export function DashboardCalendar({ reservations = [] }: Readonly<DashboardCalen
   const offset = (monthStart.getDay() + 6) % 7;
   const cells = useMemo(() => {
     const days = monthEnd.getDate();
-    return Array.from({ length: offset + days }).map((_, i) => {
+    return Array.from({ length: offset + days }, (_, i) => {
       if (i < offset) return null;
       return new Date(today.getFullYear(), today.getMonth(), i - offset + 1);
     });

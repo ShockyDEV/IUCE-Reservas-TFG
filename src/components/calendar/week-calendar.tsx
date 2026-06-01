@@ -64,7 +64,8 @@ export function WeekCalendar({
   const weekStart = useMemo(() => startOfWeek(anchorDate), [anchorDate]);
   const days = useMemo(
     () =>
-      Array.from({ length: 7 }).map(
+      Array.from(
+        { length: 7 },
         (_, i) => new Date(weekStart.getTime() + i * MS_PER_DAY),
       ),
     [weekStart],
@@ -72,7 +73,8 @@ export function WeekCalendar({
 
   const hours = useMemo(
     () =>
-      Array.from({ length: endHour - startHour + 1 }).map(
+      Array.from(
+        { length: endHour - startHour + 1 },
         (_, i) => startHour + i,
       ),
     [startHour, endHour],
