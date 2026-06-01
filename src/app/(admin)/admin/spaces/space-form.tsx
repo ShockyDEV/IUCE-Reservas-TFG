@@ -336,7 +336,7 @@ export function SpaceForm({ initialValues, mode }: Readonly<SpaceFormProps>) {
               className="h-4 w-4 rounded border-gray-300 text-iuce-blue focus:ring-iuce-blue"
             />
             <Accessibility className="h-4 w-4 text-gray-400" />
-            Espacio accesible (PMR, rampas, ascensor)
+            <span>Espacio accesible (PMR, rampas, ascensor)</span>
           </label>
         </CardContent>
       </Card>
@@ -408,7 +408,7 @@ export function SpaceForm({ initialValues, mode }: Readonly<SpaceFormProps>) {
                 }
                 className="h-4 w-4 rounded border-gray-300 text-iuce-blue focus:ring-iuce-blue"
               />
-              Espacio activo en el catálogo
+              <span>Espacio activo en el catálogo</span>
             </label>
             <p className="text-[11px] text-gray-400">
               Los espacios desactivados conservan su histórico pero no aparecen
@@ -446,11 +446,10 @@ export function SpaceForm({ initialValues, mode }: Readonly<SpaceFormProps>) {
         </Button>
         <Button type="submit" disabled={saving}>
           <Save className="h-4 w-4 mr-1.5" />
-          {saving
-            ? "Guardando…"
-            : mode === "create"
-              ? "Crear espacio"
-              : "Guardar cambios"}
+          {(() => {
+            if (saving) return "Guardando…";
+            return mode === "create" ? "Crear espacio" : "Guardar cambios";
+          })()}
         </Button>
       </div>
     </form>

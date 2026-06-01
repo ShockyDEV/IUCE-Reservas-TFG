@@ -21,7 +21,7 @@ export default async function SpaceDetailPage({
   if (!session?.user) redirect("/auth/signin");
 
   const space = await prisma.space.findUnique({ where: { id: params.id } });
-  if (!space || !space.isActive) notFound();
+  if (!space?.isActive) notFound();
 
   const equipment = parseEquipment(space.equipment);
 
@@ -101,7 +101,7 @@ export default async function SpaceDetailPage({
                   Planta
                 </dt>
                 <dd className="mt-1 text-base font-semibold text-gray-900">
-                  {space.floor !== null ? `Planta ${space.floor}` : "—"}
+                  {space.floor === null ? "—" : `Planta ${space.floor}`}
                 </dd>
               </div>
             </div>

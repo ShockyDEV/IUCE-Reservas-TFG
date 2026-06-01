@@ -181,7 +181,7 @@ export function SpacesCatalog({ spaces, equipmentOptions }: Readonly<SpacesCatal
                   onChange={(e) => setAccessibilityOnly(e.target.checked)}
                   className="h-4 w-4 rounded border-gray-300 text-iuce-blue focus:ring-iuce-blue"
                 />
-                Solo espacios accesibles
+                <span>Solo espacios accesibles</span>
               </label>
             </div>
           </div>

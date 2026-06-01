@@ -76,9 +76,9 @@ export async function PATCH(
       data: {
         ...data,
         equipment:
-          data.equipment !== undefined
-            ? JSON.stringify(data.equipment)
-            : undefined,
+          data.equipment === undefined
+            ? undefined
+            : JSON.stringify(data.equipment),
       },
     });
 

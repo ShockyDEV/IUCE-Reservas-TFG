@@ -48,31 +48,36 @@ export function NotificationDropdown() {
   }, [readIds]);
 
   useEffect(() => {
-    if (open) {
-      setLoadingList(true);
-      fetch("/api/notifications")
-        .then((r) => r.json())
-        .then((data) => {
-          setNotifications(data);
-          const allIds: string[] = data.map((n: Notification) => n.id);
-          setReadIds((prev) => {
-            const next = new Set<string>(prev);
-            allIds.forEach((id) => next.add(id));
-            return next;
-          });
-          setCount(0);
-        })
-        .catch((err) => {
-          // Si la carga falla mostramos la lista vacia y un toast no es necesario.
-          console.warn("notifications fetch failed", err);
-        })
-        .finally(() => setLoadingList(false));
+    if (!open) return;
+    setLoadingList(true);
+    fetch("/api/notifications")
+      .then((r) => r.json())
+      .then(applyNotificationsResponse)
+      .catch((err) => {
+        // Si la carga falla mostramos la lista vacia y un toast no es necesario.
+        console.warn("notifications fetch failed", err);
+      })
+      .finally(() => setLoadingList(false));
+
+    function applyNotificationsResponse(data: Notification[]) {
+      setNotifications(data);
+      setReadIds((prev) => {
+        const next = new Set<string>(prev);
+        for (const n of data) next.add(n.id);
+        return next;
+      });
+      setCount(0);
     }
   }, [open]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      const target = e.target;
+      if (
+        target instanceof Node &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target)
+      ) {
         setOpen(false);
       }
     };

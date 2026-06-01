@@ -103,6 +103,16 @@ export default function AdminUsersPage() {
   const callerRole = session?.user.role;
   const isSuperAdmin = callerRole === "SUPER_ADMIN";
 
+  /** Aplica el cambio de ban/reason de un usuario al state local. */
+  const updateUserBanState = (
+    targetId: string,
+    next: { isBanned: boolean; banReason: string | null },
+  ) => {
+    setUsers((prev) =>
+      prev.map((x) => (x.id === targetId ? { ...x, ...next } : x)),
+    );
+  };
+
   const handleSyncNames = async () => {
     if (!confirm("¿Sincronizar todos los nombres @usal.es contra el directorio institucional? Puede tardar varios segundos.")) {
       return;
@@ -250,13 +260,7 @@ export default function AdminUsersPage() {
                         userName={u.name}
                         isBanned={u.isBanned}
                         banReason={u.banReason}
-                        onChange={({ isBanned, banReason }) =>
-                          setUsers((prev) =>
-                            prev.map((x) =>
-                              x.id === u.id ? { ...x, isBanned, banReason } : x
-                            )
-                          )
-                        }
+                        onChange={(next) => updateUserBanState(u.id, next)}
                       />
                     )}
                     {canChange ? (

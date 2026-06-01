@@ -13,7 +13,7 @@ const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0";
  *             responde a una consulta trivial.
  *   503       cuando la aplicación está arriba pero la base de datos
  *             no responde. El monitor de Apache puede reaccionar a esta
- *             señal sin tirar todo el contenedor.
+ *             señal sin reiniciar el contenedor completo.
  *
  * El payload incluye la versión, el timestamp del servidor y la latencia
  * de la comprobación a la base de datos, para facilitar la diagnosis

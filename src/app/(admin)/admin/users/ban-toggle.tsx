@@ -31,7 +31,7 @@ export function BanToggle({ userId, userName, isBanned, banReason, onChange }: R
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           isBanned: !isBanned,
-          banReason: !isBanned ? reason.trim() : null,
+          banReason: isBanned ? null : reason.trim(),
         }),
       });
       const data = await res.json();
@@ -130,11 +130,10 @@ export function BanToggle({ userId, userName, isBanned, banReason, onChange }: R
                 disabled={saving}
                 className={isBanned ? "" : "bg-usal-red hover:bg-usal-red-dark"}
               >
-                {saving
-                  ? "Guardando..."
-                  : isBanned
-                    ? "Reactivar"
-                    : "Suspender"}
+                {(() => {
+                  if (saving) return "Guardando...";
+                  return isBanned ? "Reactivar" : "Suspender";
+                })()}
               </Button>
             </div>
           </div>

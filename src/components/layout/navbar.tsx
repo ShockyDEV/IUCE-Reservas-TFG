@@ -18,7 +18,8 @@ import {
 import { cn } from "@/lib/cn";
 import { NotificationDropdown } from "@/components/layout/notification-dropdown";
 
-type Role = "USER" | "ADMIN" | "SUPER_ADMIN" | string;
+/** Rol enviado por la sesión: típicamente USER/ADMIN/SUPER_ADMIN. */
+type Role = string;
 
 interface NavbarProps {
   user: { name: string; email: string; role: Role };

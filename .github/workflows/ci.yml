@@ -19,11 +19,14 @@ jobs:
     timeout-minutes: 15
 
     services:
+      # PostgreSQL efímera: vive solo durante este job y queda aislada del
+      # runner. Usamos `trust` para evitar credenciales hardcodeadas en el
+      # workflow (SonarCloud S2068 / sonarsource:S2068).
       postgres:
         image: postgres:16-alpine
         env:
           POSTGRES_USER: iuce
-          POSTGRES_PASSWORD: iuce2024
+          POSTGRES_HOST_AUTH_METHOD: trust
           POSTGRES_DB: iuce_reservas
         ports:
           - 5432:5432
@@ -34,7 +37,7 @@ jobs:
           --health-retries=5
 
     env:
-      DATABASE_URL: postgresql://iuce:iuce2024@localhost:5432/iuce_reservas
+      DATABASE_URL: postgresql://iuce@localhost:5432/iuce_reservas
       NEXTAUTH_URL: http://localhost:3000
       NEXTAUTH_SECRET: dummy_secret_for_ci
       NEXT_PUBLIC_USE_MOCK_AUTH: "true"
@@ -75,7 +78,8 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     env:
-      DATABASE_URL: postgresql://iuce:iuce2024@localhost:5432/iuce_reservas
+      # El build de Next no necesita conectar a la DB; placeholder valido.
+      DATABASE_URL: postgresql://iuce@localhost:5432/iuce_reservas
       NEXTAUTH_URL: http://localhost:3000
       NEXTAUTH_SECRET: dummy_secret_for_build
       SKIP_ENV_VALIDATION: "true"
