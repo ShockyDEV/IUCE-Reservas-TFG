@@ -37,6 +37,44 @@ const RECURRENCE_OPTIONS = [
   { value: "MONTHLY", label: "Mensual" },
 ];
 
+interface ReservationForm {
+  spaceId: string;
+  title: string;
+  description: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  attendees: number;
+  recurrenceRule: string;
+  recurrenceEndDate: string;
+}
+
+/**
+ * Validacion sincronica del formulario antes del POST. Devuelve el primer
+ * mensaje de error encontrado, o null si el formulario es coherente. Se
+ * extrae aqui para que la cognitive complexity del submit handler se
+ * mantenga por debajo del umbral del analisis estatico.
+ */
+function validateReservationForm(
+  form: ReservationForm,
+  selectedSpace: Space | undefined,
+): string | null {
+  if (!form.spaceId) return "Selecciona un espacio";
+  if (!form.title || !form.date || !form.startTime || !form.endTime) {
+    return "Completa todos los campos obligatorios";
+  }
+  if (form.startTime >= form.endTime) {
+    return "La hora de fin debe ser posterior a la de inicio";
+  }
+  if (selectedSpace && form.attendees > selectedSpace.capacity) {
+    return `Máximo ${selectedSpace.capacity} asistentes para este espacio`;
+  }
+  if (form.recurrenceRule && !form.recurrenceEndDate) {
+    return "Indica una fecha de finalización para la recurrencia";
+  }
+  return null;
+}
+
 export default function NewReservationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -77,26 +115,9 @@ export default function NewReservationPage() {
     e.preventDefault();
     setError(null);
 
-    if (!form.spaceId) {
-      setError("Selecciona un espacio");
-      return;
-    }
-    if (!form.title || !form.date || !form.startTime || !form.endTime) {
-      setError("Completa todos los campos obligatorios");
-      return;
-    }
-    if (form.startTime >= form.endTime) {
-      setError("La hora de fin debe ser posterior a la de inicio");
-      return;
-    }
-    if (selectedSpace && form.attendees > selectedSpace.capacity) {
-      setError(
-        `Máximo ${selectedSpace.capacity} asistentes para este espacio`
-      );
-      return;
-    }
-    if (form.recurrenceRule && !form.recurrenceEndDate) {
-      setError("Indica una fecha de finalización para la recurrencia");
+    const validationError = validateReservationForm(form, selectedSpace);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
