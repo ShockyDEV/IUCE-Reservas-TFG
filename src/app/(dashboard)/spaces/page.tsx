@@ -2,26 +2,10 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
+import { parseEquipment } from "@/lib/format";
 import { SpacesCatalog, type SpaceCard } from "./spaces-catalog";
 
 export const metadata = { title: "Catálogo de espacios" };
-
-function parseEquipment(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value.filter((item): item is string => typeof item === "string");
-  }
-  if (typeof value === "string") {
-    try {
-      const parsed = JSON.parse(value);
-      if (Array.isArray(parsed)) {
-        return parsed.filter((item): item is string => typeof item === "string");
-      }
-    } catch {
-      // ignored
-    }
-  }
-  return [];
-}
 
 export default async function SpacesPage() {
   const session = await auth();
@@ -51,7 +35,9 @@ export default async function SpacesPage() {
   // de espacios sin tener que tocar código.
   const equipmentSet = new Set<string>();
   spaces.forEach((s) => s.equipment.forEach((eq) => equipmentSet.add(eq)));
-  const equipmentOptions = Array.from(equipmentSet).sort();
+  const equipmentOptions = Array.from(equipmentSet).sort((a, b) =>
+    a.localeCompare(b, "es", { sensitivity: "base" }),
+  );
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10">

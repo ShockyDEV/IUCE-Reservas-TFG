@@ -5,6 +5,12 @@ import {
   sendReservationReminderEmail,
 } from "@/lib/email";
 
+const MS_PER_HOUR = 60 * 60 * 1000;
+/** Mitad inferior de la ventana ±1h alrededor de las 24h del recordatorio. */
+const REMINDER_WINDOW_START_MS = 23 * MS_PER_HOUR;
+/** Mitad superior de la ventana ±1h alrededor de las 24h del recordatorio. */
+const REMINDER_WINDOW_END_MS = 25 * MS_PER_HOUR;
+
 /**
  * Tarea programada que cumple dos funciones:
  *   1. Enviar un recordatorio por email a las reservas APPROVED que comienzan
@@ -42,8 +48,8 @@ export async function GET(req: NextRequest) {
   });
 
   // 2) Recordatorios para reservas APPROVED que arrancan en ~24 horas
-  const in23h = new Date(now.getTime() + 23 * 60 * 60 * 1000);
-  const in25h = new Date(now.getTime() + 25 * 60 * 60 * 1000);
+  const in23h = new Date(now.getTime() + REMINDER_WINDOW_START_MS);
+  const in25h = new Date(now.getTime() + REMINDER_WINDOW_END_MS);
 
   const upcoming = await prisma.reservation.findMany({
     where: {

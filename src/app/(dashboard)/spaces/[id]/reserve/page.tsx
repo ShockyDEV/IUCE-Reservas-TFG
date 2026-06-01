@@ -27,7 +27,7 @@ interface Space {
   color?: string;
 }
 
-export default function ReservePage({ params }: { params: { id: string } }) {
+export default function ReservePage({ params }: Readonly<{ params: { id: string } }>) {
   const router = useRouter();
   const [space, setSpace] = useState<Space | null>(null);
   const [loading, setLoading] = useState(false);
@@ -135,10 +135,11 @@ export default function ReservePage({ params }: { params: { id: string } }) {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="reserve-title" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Título <span className="text-usal-red">*</span>
               </label>
               <Input
+                id="reserve-title"
                 type="text"
                 required
                 minLength={3}
@@ -150,10 +151,11 @@ export default function ReservePage({ params }: { params: { id: string } }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="reserve-desc" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Descripción
               </label>
               <Textarea
+                id="reserve-desc"
                 rows={3}
                 maxLength={500}
                 value={form.description}
@@ -165,11 +167,12 @@ export default function ReservePage({ params }: { params: { id: string } }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="reserve-date" className="block text-sm font-medium text-gray-700 mb-1.5">
                 <CalendarDays className="inline-block h-4 w-4 mr-1 -mt-0.5" />
                 Fecha <span className="text-usal-red">*</span>
               </label>
               <Input
+                id="reserve-date"
                 type="date"
                 required
                 min={today}
@@ -180,11 +183,12 @@ export default function ReservePage({ params }: { params: { id: string } }) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label htmlFor="reserve-start" className="block text-sm font-medium text-gray-700 mb-1.5">
                   <Clock className="inline-block h-4 w-4 mr-1 -mt-0.5" />
                   Hora inicio <span className="text-usal-red">*</span>
                 </label>
                 <Input
+                  id="reserve-start"
                   type="time"
                   required
                   value={form.startTime}
@@ -194,11 +198,12 @@ export default function ReservePage({ params }: { params: { id: string } }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label htmlFor="reserve-end" className="block text-sm font-medium text-gray-700 mb-1.5">
                   <Clock className="inline-block h-4 w-4 mr-1 -mt-0.5" />
                   Hora fin <span className="text-usal-red">*</span>
                 </label>
                 <Input
+                  id="reserve-end"
                   type="time"
                   required
                   value={form.endTime}
@@ -208,17 +213,18 @@ export default function ReservePage({ params }: { params: { id: string } }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="reserve-attendees" className="block text-sm font-medium text-gray-700 mb-1.5">
                 <Users className="inline-block h-4 w-4 mr-1 -mt-0.5" />
                 Número de asistentes
               </label>
               <Input
+                id="reserve-attendees"
                 type="number"
                 min={1}
                 max={space?.capacity || 500}
                 value={form.attendees}
                 onChange={(e) =>
-                  setForm({ ...form, attendees: parseInt(e.target.value) || 1 })
+                  setForm({ ...form, attendees: Number.parseInt(e.target.value, 10) || 1 })
                 }
                 className="w-32"
               />

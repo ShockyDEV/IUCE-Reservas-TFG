@@ -14,6 +14,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { parseEquipment } from "@/lib/format";
 
 interface Space {
   id: string;
@@ -28,23 +29,6 @@ interface Space {
   color: string;
   imageUrl?: string | null;
   isActive: boolean;
-}
-
-function parseEquipment(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value.filter((item): item is string => typeof item === "string");
-  }
-  if (typeof value === "string") {
-    try {
-      const parsed = JSON.parse(value);
-      if (Array.isArray(parsed)) {
-        return parsed.filter((item): item is string => typeof item === "string");
-      }
-    } catch {
-      // ignored
-    }
-  }
-  return [];
 }
 
 export default function AdminSpacesPage() {
@@ -90,24 +74,31 @@ export default function AdminSpacesPage() {
         </Link>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600" />
-        </div>
-      ) : spaces.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center py-12 text-center">
-            <Building2 className="h-8 w-8 text-gray-300 mb-3" />
-            <p className="text-sm text-gray-500">No hay espacios registrados</p>
-            <Link href="/admin/spaces/new" className="mt-3">
-              <Button size="sm">
-                <Plus className="h-3.5 w-3.5 mr-1.5" /> Crear el primero
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {(() => {
+        if (loading) {
+          return (
+            <div className="flex justify-center py-12">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600" />
+            </div>
+          );
+        }
+        if (spaces.length === 0) {
+          return (
+            <Card>
+              <CardContent className="flex flex-col items-center py-12 text-center">
+                <Building2 className="h-8 w-8 text-gray-300 mb-3" />
+                <p className="text-sm text-gray-500">No hay espacios registrados</p>
+                <Link href="/admin/spaces/new" className="mt-3">
+                  <Button size="sm">
+                    <Plus className="h-3.5 w-3.5 mr-1.5" /> Crear el primero
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          );
+        }
+        return (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {spaces.map((s) => {
             const eq = parseEquipment(s.equipment);
             return (
@@ -145,7 +136,7 @@ export default function AdminSpacesPage() {
                       </span>
                       <span>·</span>
                       <span>{s.building}</span>
-                      {s.floor != null && (
+                      {s.floor !== null && s.floor !== undefined && (
                         <>
                           <span>·</span>
                           <span>P{s.floor}</span>
@@ -167,8 +158,9 @@ export default function AdminSpacesPage() {
               </Link>
             );
           })}
-        </div>
-      )}
+          </div>
+        );
+      })()}
     </div>
   );
 }

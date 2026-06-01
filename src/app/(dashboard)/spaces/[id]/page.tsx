@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Accessibility, Users, MapPin, Building, ArrowLeft, CalendarPlus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getSpaceImage } from "@/lib/space-images";
+import { parseEquipment } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,25 +14,16 @@ export const metadata = { title: "Detalle del espacio" };
 
 export default async function SpaceDetailPage({
   params,
-}: {
+}: Readonly<{
   params: { id: string };
-}) {
+}>) {
   const session = await auth();
   if (!session?.user) redirect("/auth/signin");
 
   const space = await prisma.space.findUnique({ where: { id: params.id } });
   if (!space || !space.isActive) notFound();
 
-  const equipment: string[] = (() => {
-    try {
-      const eq = space.equipment as unknown;
-      if (typeof eq === "string") return JSON.parse(eq);
-      if (Array.isArray(eq)) return eq;
-      return [];
-    } catch {
-      return [];
-    }
-  })();
+  const equipment = parseEquipment(space.equipment);
 
   const imgSrc = space.imageUrl || getSpaceImage(space.name, space.code);
 

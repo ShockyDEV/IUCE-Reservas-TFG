@@ -14,6 +14,12 @@ interface Notification {
   createdAt: string;
 }
 
+/** Cada cuanto vuelve a pedir el contador (60 s). */
+const REFRESH_INTERVAL_MS = 60_000;
+const MS_PER_MINUTE = 60_000;
+const MINUTES_PER_HOUR = 60;
+const HOURS_PER_DAY = 24;
+
 export function NotificationDropdown() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -31,10 +37,13 @@ export function NotificationDropdown() {
           const serverCount = d.count || 0;
           setCount(Math.max(0, serverCount - readIds.size));
         })
-        .catch(() => {});
+        .catch((err) => {
+          // Polling no critico: si el endpoint falla, mantenemos el contador previo.
+          console.warn("notifications/count failed", err);
+        });
     };
     fetchCount();
-    const interval = setInterval(fetchCount, 60000);
+    const interval = setInterval(fetchCount, REFRESH_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [readIds]);
 
@@ -53,7 +62,10 @@ export function NotificationDropdown() {
           });
           setCount(0);
         })
-        .catch(() => {})
+        .catch((err) => {
+          // Si la carga falla mostramos la lista vacia y un toast no es necesario.
+          console.warn("notifications fetch failed", err);
+        })
         .finally(() => setLoadingList(false));
     }
   }, [open]);
@@ -79,8 +91,11 @@ export function NotificationDropdown() {
   };
 
   const handleMarkAllRead = () => {
-    const allIds = new Set(notifications.map((n) => n.id));
-    setReadIds((prev) => new Set([...Array.from(prev), ...Array.from(allIds)]));
+    setReadIds((prev) => {
+      const next = new Set(prev);
+      for (const n of notifications) next.add(n.id);
+      return next;
+    });
     setCount(0);
   };
 
@@ -94,12 +109,12 @@ export function NotificationDropdown() {
     const d = new Date(dateStr);
     const now = new Date();
     const diffMs = now.getTime() - d.getTime();
-    const diffMin = Math.floor(diffMs / 60000);
+    const diffMin = Math.floor(diffMs / MS_PER_MINUTE);
     if (diffMin < 1) return "ahora";
-    if (diffMin < 60) return `hace ${diffMin}min`;
-    const diffH = Math.floor(diffMin / 60);
-    if (diffH < 24) return `hace ${diffH}h`;
-    const diffD = Math.floor(diffH / 24);
+    if (diffMin < MINUTES_PER_HOUR) return `hace ${diffMin}min`;
+    const diffH = Math.floor(diffMin / MINUTES_PER_HOUR);
+    if (diffH < HOURS_PER_DAY) return `hace ${diffH}h`;
+    const diffD = Math.floor(diffH / HOURS_PER_DAY);
     return `hace ${diffD}d`;
   };
 
@@ -125,6 +140,7 @@ export function NotificationDropdown() {
             <h3 className="text-sm font-semibold text-gray-900">Notificaciones</h3>
             {notifications.length > 0 && (
               <button
+                type="button"
                 onClick={handleMarkAllRead}
                 className="text-[11px] text-iuce-blue hover:text-iuce-blue-dark font-medium flex items-center gap-1"
               >
@@ -134,27 +150,34 @@ export function NotificationDropdown() {
           </div>
 
           <div className="max-h-72 overflow-y-auto">
-            {loadingList ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-brand-200 border-t-brand-600" />
-              </div>
-            ) : notifications.length === 0 ? (
-              <div className="py-8 text-center">
-                <Bell className="h-6 w-6 text-gray-300 mx-auto mb-2" />
-                <p className="text-xs text-gray-400">Sin notificaciones</p>
-              </div>
-            ) : (
-              notifications.map((notif) => {
+            {(() => {
+              if (loadingList) {
+                return (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-brand-200 border-t-brand-600" />
+                  </div>
+                );
+              }
+              if (notifications.length === 0) {
+                return (
+                  <div className="py-8 text-center">
+                    <Bell className="h-6 w-6 text-gray-300 mx-auto mb-2" />
+                    <p className="text-xs text-gray-400">Sin notificaciones</p>
+                  </div>
+                );
+              }
+              return notifications.map((notif) => {
                 const cfg = typeConfig[notif.type];
                 const Icon = cfg.icon;
                 const isRead = readIds.has(notif.id);
                 return (
                   <button
                     key={notif.id}
+                    type="button"
                     onClick={() => handleClick(notif)}
                     className={cn(
                       "w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-b-0",
-                      isRead && "opacity-60"
+                      isRead && "opacity-60",
                     )}
                   >
                     <div className={cn("flex-shrink-0 h-7 w-7 rounded-full flex items-center justify-center mt-0.5", cfg.bg)}>
@@ -170,8 +193,8 @@ export function NotificationDropdown() {
                     )}
                   </button>
                 );
-              })
-            )}
+              });
+            })()}
           </div>
         </div>
       )}

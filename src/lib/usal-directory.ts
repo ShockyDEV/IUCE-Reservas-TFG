@@ -91,5 +91,5 @@ function parseDirectoryResponse(data: DirectoryResponse): USALPerson | null {
 }
 
 function toTitleCase(str: string): string {
-  return str.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase());
+  return str.toLowerCase().replaceAll(/(^|\s)\S/g, (c) => c.toUpperCase());
 }

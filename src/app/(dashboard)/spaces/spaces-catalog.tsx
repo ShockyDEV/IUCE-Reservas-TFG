@@ -30,11 +30,12 @@ interface SpacesCatalogProps {
   equipmentOptions: string[];
 }
 
-export function SpacesCatalog({ spaces, equipmentOptions }: SpacesCatalogProps) {
+export function SpacesCatalog({ spaces, equipmentOptions }: Readonly<SpacesCatalogProps>) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const initialCapacity = Number(searchParams.get("capacity")) || 0;
+  const initialCapacity =
+    Number.parseInt(searchParams.get("capacity") ?? "0", 10) || 0;
   const initialAccessibility = searchParams.get("accessibility") === "1";
   const initialEquipment = (searchParams.get("equipment") || "")
     .split(",")
@@ -117,7 +118,9 @@ export function SpacesCatalog({ spaces, equipmentOptions }: SpacesCatalogProps) 
                   max={100}
                   step={5}
                   value={minCapacity}
-                  onChange={(e) => setMinCapacity(Number(e.target.value))}
+                  onChange={(e) =>
+                    setMinCapacity(Number.parseInt(e.target.value, 10) || 0)
+                  }
                   className="flex-1 accent-iuce-blue"
                 />
                 <Input
@@ -125,7 +128,9 @@ export function SpacesCatalog({ spaces, equipmentOptions }: SpacesCatalogProps) 
                   min={0}
                   max={500}
                   value={minCapacity}
-                  onChange={(e) => setMinCapacity(Number(e.target.value) || 0)}
+                  onChange={(e) =>
+                    setMinCapacity(Number.parseInt(e.target.value, 10) || 0)
+                  }
                   className="h-9 w-20 text-xs"
                 />
               </div>

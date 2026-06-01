@@ -31,7 +31,7 @@ function isSameDay(a: Date, b: Date): boolean {
  * curso con un punto del color del espacio bajo cada día que contiene
  * alguna reserva del usuario.
  */
-export function DashboardCalendar({ reservations = [] }: DashboardCalendarProps) {
+export function DashboardCalendar({ reservations = [] }: Readonly<DashboardCalendarProps>) {
   const today = new Date();
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
   const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
@@ -39,7 +39,7 @@ export function DashboardCalendar({ reservations = [] }: DashboardCalendarProps)
   const offset = (monthStart.getDay() + 6) % 7;
   const cells = useMemo(() => {
     const days = monthEnd.getDate();
-    return Array.from({ length: offset + days }).map((_, i) => {
+    return Array.from({ length: offset + days }, (_, i) => {
       if (i < offset) return null;
       return new Date(today.getFullYear(), today.getMonth(), i - offset + 1);
     });
@@ -72,7 +72,7 @@ export function DashboardCalendar({ reservations = [] }: DashboardCalendarProps)
             const isToday = day && isSameDay(day, today);
             return (
               <div
-                key={i}
+                key={day ? day.toISOString() : `empty-${i}`}
                 className={`h-9 rounded-md flex flex-col items-center justify-center text-xs ${
                   day
                     ? isToday

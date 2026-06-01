@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { ArrowLeft } from "lucide-react";
+import { parseEquipment } from "@/lib/format";
 import { SpaceForm, type SpaceFormValues } from "../space-form";
 
 export default function EditSpacePage() {
@@ -31,7 +32,7 @@ export default function EditSpacePage() {
           capacity: data.capacity,
           floor: data.floor ?? 0,
           building: data.building ?? "IUCE",
-          equipment: Array.isArray(data.equipment) ? data.equipment : [],
+          equipment: parseEquipment(data.equipment),
           accessibility: !!data.accessibility,
           color: data.color ?? "#3B7DD8",
           imageUrl: data.imageUrl ?? "",
@@ -63,15 +64,19 @@ export default function EditSpacePage() {
         </h1>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600" />
-        </div>
-      ) : values ? (
-        <SpaceForm initialValues={values} mode="edit" />
-      ) : (
-        <p className="text-sm text-gray-500">No se pudo cargar el espacio.</p>
-      )}
+      {(() => {
+        if (loading) {
+          return (
+            <div className="flex justify-center py-12">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600" />
+            </div>
+          );
+        }
+        if (values) {
+          return <SpaceForm initialValues={values} mode="edit" />;
+        }
+        return <p className="text-sm text-gray-500">No se pudo cargar el espacio.</p>;
+      })()}
     </div>
   );
 }

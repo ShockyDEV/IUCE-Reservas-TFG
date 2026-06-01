@@ -37,6 +37,44 @@ const RECURRENCE_OPTIONS = [
   { value: "MONTHLY", label: "Mensual" },
 ];
 
+interface ReservationForm {
+  spaceId: string;
+  title: string;
+  description: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  attendees: number;
+  recurrenceRule: string;
+  recurrenceEndDate: string;
+}
+
+/**
+ * Validacion sincronica del formulario antes del POST. Devuelve el primer
+ * mensaje de error encontrado, o null si el formulario es coherente. Se
+ * extrae aqui para que la cognitive complexity del submit handler se
+ * mantenga por debajo del umbral del analisis estatico.
+ */
+function validateReservationForm(
+  form: ReservationForm,
+  selectedSpace: Space | undefined,
+): string | null {
+  if (!form.spaceId) return "Selecciona un espacio";
+  if (!form.title || !form.date || !form.startTime || !form.endTime) {
+    return "Completa todos los campos obligatorios";
+  }
+  if (form.startTime >= form.endTime) {
+    return "La hora de fin debe ser posterior a la de inicio";
+  }
+  if (selectedSpace && form.attendees > selectedSpace.capacity) {
+    return `Máximo ${selectedSpace.capacity} asistentes para este espacio`;
+  }
+  if (form.recurrenceRule && !form.recurrenceEndDate) {
+    return "Indica una fecha de finalización para la recurrencia";
+  }
+  return null;
+}
+
 export default function NewReservationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -77,26 +115,9 @@ export default function NewReservationPage() {
     e.preventDefault();
     setError(null);
 
-    if (!form.spaceId) {
-      setError("Selecciona un espacio");
-      return;
-    }
-    if (!form.title || !form.date || !form.startTime || !form.endTime) {
-      setError("Completa todos los campos obligatorios");
-      return;
-    }
-    if (form.startTime >= form.endTime) {
-      setError("La hora de fin debe ser posterior a la de inicio");
-      return;
-    }
-    if (selectedSpace && form.attendees > selectedSpace.capacity) {
-      setError(
-        `Máximo ${selectedSpace.capacity} asistentes para este espacio`
-      );
-      return;
-    }
-    if (form.recurrenceRule && !form.recurrenceEndDate) {
-      setError("Indica una fecha de finalización para la recurrencia");
+    const validationError = validateReservationForm(form, selectedSpace);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -180,7 +201,7 @@ export default function NewReservationPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="new-res-space" className="block text-sm font-medium text-gray-700 mb-1.5">
                 <Building2 className="inline-block h-4 w-4 mr-1 -mt-0.5" />
                 Espacio <span className="text-usal-red">*</span>
               </label>
@@ -188,6 +209,7 @@ export default function NewReservationPage() {
                 <p className="text-xs text-gray-400">Cargando espacios…</p>
               ) : (
                 <select
+                  id="new-res-space"
                   required
                   value={form.spaceId}
                   onChange={(e) =>
@@ -214,10 +236,11 @@ export default function NewReservationPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="new-res-title" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Título <span className="text-usal-red">*</span>
               </label>
               <Input
+                id="new-res-title"
                 type="text"
                 required
                 minLength={3}
@@ -229,10 +252,11 @@ export default function NewReservationPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="new-res-desc" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Descripción
               </label>
               <Textarea
+                id="new-res-desc"
                 rows={3}
                 maxLength={500}
                 value={form.description}
@@ -244,11 +268,12 @@ export default function NewReservationPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="new-res-date" className="block text-sm font-medium text-gray-700 mb-1.5">
                 <CalendarDays className="inline-block h-4 w-4 mr-1 -mt-0.5" />
                 Fecha <span className="text-usal-red">*</span>
               </label>
               <Input
+                id="new-res-date"
                 type="date"
                 required
                 min={today}
@@ -259,11 +284,12 @@ export default function NewReservationPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label htmlFor="new-res-start" className="block text-sm font-medium text-gray-700 mb-1.5">
                   <Clock className="inline-block h-4 w-4 mr-1 -mt-0.5" />
                   Hora inicio <span className="text-usal-red">*</span>
                 </label>
                 <Input
+                  id="new-res-start"
                   type="time"
                   required
                   value={form.startTime}
@@ -273,11 +299,12 @@ export default function NewReservationPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label htmlFor="new-res-end" className="block text-sm font-medium text-gray-700 mb-1.5">
                   <Clock className="inline-block h-4 w-4 mr-1 -mt-0.5" />
                   Hora fin <span className="text-usal-red">*</span>
                 </label>
                 <Input
+                  id="new-res-end"
                   type="time"
                   required
                   value={form.endTime}
@@ -289,11 +316,12 @@ export default function NewReservationPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="new-res-attendees" className="block text-sm font-medium text-gray-700 mb-1.5">
                 <Users className="inline-block h-4 w-4 mr-1 -mt-0.5" />
                 Número de asistentes
               </label>
               <Input
+                id="new-res-attendees"
                 type="number"
                 min={1}
                 max={selectedSpace?.capacity || 500}
@@ -301,7 +329,7 @@ export default function NewReservationPage() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    attendees: parseInt(e.target.value) || 1,
+                    attendees: Number.parseInt(e.target.value, 10) || 1,
                   })
                 }
                 className="w-32"
@@ -310,11 +338,12 @@ export default function NewReservationPage() {
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label htmlFor="new-res-recurrence" className="block text-sm font-medium text-gray-700 mb-1.5">
                   <Repeat className="inline-block h-4 w-4 mr-1 -mt-0.5" />
                   Recurrencia
                 </label>
                 <select
+                  id="new-res-recurrence"
                   value={form.recurrenceRule}
                   onChange={(e) =>
                     setForm({ ...form, recurrenceRule: e.target.value })
@@ -330,10 +359,11 @@ export default function NewReservationPage() {
               </div>
               {form.recurrenceRule && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label htmlFor="new-res-recurrence-end" className="block text-sm font-medium text-gray-700 mb-1.5">
                     Hasta fecha
                   </label>
                   <Input
+                    id="new-res-recurrence-end"
                     type="date"
                     min={form.date || today}
                     value={form.recurrenceEndDate}

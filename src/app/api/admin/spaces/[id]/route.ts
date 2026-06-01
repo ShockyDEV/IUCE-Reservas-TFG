@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-guard";
 import { updateSpaceSchema } from "@/lib/validations";
 import { logAudit } from "@/lib/audit";
+import { parseEquipment } from "@/lib/format";
 
 /**
  * GET /api/admin/spaces/[id]
@@ -27,17 +28,7 @@ export async function GET(
     );
   }
 
-  let equipment: string[] = [];
-  if (Array.isArray(space.equipment)) {
-    equipment = space.equipment as string[];
-  } else if (typeof space.equipment === "string") {
-    try {
-      const parsed = JSON.parse(space.equipment);
-      if (Array.isArray(parsed)) equipment = parsed.filter((e): e is string => typeof e === "string");
-    } catch {
-      equipment = [];
-    }
-  }
+  const equipment = parseEquipment(space.equipment);
 
   return NextResponse.json({ ...space, equipment });
 }

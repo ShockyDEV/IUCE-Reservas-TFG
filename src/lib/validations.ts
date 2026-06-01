@@ -11,10 +11,10 @@ export const createReservationSchema = z
       .max(500, "La descripción no puede superar 500 caracteres")
       .optional(),
     spaceId: z.string().min(1, "Debes seleccionar un espacio"),
-    startTime: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    startTime: z.string().refine((val) => !Number.isNaN(Date.parse(val)), {
       message: "Fecha de inicio no válida",
     }),
-    endTime: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    endTime: z.string().refine((val) => !Number.isNaN(Date.parse(val)), {
       message: "Fecha de fin no válida",
     }),
     attendees: z
@@ -60,7 +60,7 @@ export const createReservationSchema = z
       if (data.isRecurring) {
         return (
           data.recurrenceEndDate !== undefined &&
-          !isNaN(Date.parse(data.recurrenceEndDate))
+          !Number.isNaN(Date.parse(data.recurrenceEndDate))
         );
       }
       return true;
@@ -86,10 +86,10 @@ export const reviewReservationSchema = z.object({
 export const createBlockedSlotSchema = z
   .object({
     spaceId: z.string().min(1, "Debes seleccionar un espacio"),
-    startTime: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    startTime: z.string().refine((val) => !Number.isNaN(Date.parse(val)), {
       message: "Fecha de inicio no válida",
     }),
-    endTime: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    endTime: z.string().refine((val) => !Number.isNaN(Date.parse(val)), {
       message: "Fecha de fin no válida",
     }),
     reason: z

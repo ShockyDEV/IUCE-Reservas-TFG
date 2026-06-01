@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { sendMagicLinkEmail } from "@/lib/email";
+
+const TOKEN_BYTES = 32;
+const MAX_TOKENS_PER_EMAIL = 5;
+const TOKEN_VALIDITY_MS = 24 * 60 * 60 * 1000; // 24 horas
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,7 +26,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (recentTokens >= 5) {
+    if (recentTokens >= MAX_TOKENS_PER_EMAIL) {
       return NextResponse.json(
         { error: "Demasiados intentos. Espera unos minutos." },
         { status: 429 }
@@ -30,8 +34,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate token
-    const token = randomBytes(32).toString("hex");
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const token = randomBytes(TOKEN_BYTES).toString("hex");
+    const expires = new Date(Date.now() + TOKEN_VALIDITY_MS);
 
     // Store in DB
     await prisma.verificationToken.create({

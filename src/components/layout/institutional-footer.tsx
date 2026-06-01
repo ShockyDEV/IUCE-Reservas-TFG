@@ -54,7 +54,7 @@ export function InstitutionalFooter() {
                 <a
                   href="https://iuce.usal.es"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="text-gray-600 hover:text-iuce-blue-dark"
                 >
                   Web del IUCE
@@ -64,7 +64,7 @@ export function InstitutionalFooter() {
                 <a
                   href="https://www.usal.es"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="text-gray-600 hover:text-iuce-blue-dark"
                 >
                   Universidad de Salamanca

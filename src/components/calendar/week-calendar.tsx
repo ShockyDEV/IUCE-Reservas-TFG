@@ -58,13 +58,14 @@ export function WeekCalendar({
   blockedSlots = [],
   startHour = 8,
   endHour = 21,
-}: WeekCalendarProps) {
+}: Readonly<WeekCalendarProps>) {
   const [anchorDate, setAnchorDate] = useState(() => new Date());
 
   const weekStart = useMemo(() => startOfWeek(anchorDate), [anchorDate]);
   const days = useMemo(
     () =>
-      Array.from({ length: 7 }).map(
+      Array.from(
+        { length: 7 },
         (_, i) => new Date(weekStart.getTime() + i * MS_PER_DAY),
       ),
     [weekStart],
@@ -72,7 +73,8 @@ export function WeekCalendar({
 
   const hours = useMemo(
     () =>
-      Array.from({ length: endHour - startHour + 1 }).map(
+      Array.from(
+        { length: endHour - startHour + 1 },
         (_, i) => startHour + i,
       ),
     [startHour, endHour],
@@ -135,7 +137,7 @@ export function WeekCalendar({
           <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b border-gray-100 pb-2 text-center text-xs font-medium text-gray-500">
             <div />
             {days.map((d, i) => (
-              <div key={i}>
+              <div key={d.toISOString()}>
                 <p>{DAY_LABELS[i]}</p>
                 <p className="text-gray-900 font-semibold">
                   {formatDayHeader(d)}
@@ -154,7 +156,7 @@ export function WeekCalendar({
                 </div>
               ))}
             </div>
-            {days.map((day, i) => {
+            {days.map((day) => {
               const dayStart = day.getTime();
               const dayEnd = dayStart + MS_PER_DAY;
               const dayReservations = reservations.filter((r) => {
@@ -167,7 +169,7 @@ export function WeekCalendar({
               });
               return (
                 <div
-                  key={i}
+                  key={day.toISOString()}
                   className="relative border-l border-gray-100"
                   style={{ height: `${hours.length * 48}px` }}
                 >

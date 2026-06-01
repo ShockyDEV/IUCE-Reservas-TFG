@@ -36,9 +36,9 @@ Si no puedes utilizar un espacio reservado, cancela tu reserva lo antes posible.
 
 function previewMarkdown(md: string): string {
   const escaped = md
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 
   const lines = escaped.split(/\r?\n/);
   let html = "";
@@ -62,11 +62,11 @@ function previewMarkdown(md: string): string {
     } else if (trimmed === "") {
       closeParagraph();
     } else {
-      if (!inParagraph) {
+      if (inParagraph) {
+        html += " ";
+      } else {
         html += '<p class="text-xs text-gray-600 leading-relaxed mb-2">';
         inParagraph = true;
-      } else {
-        html += " ";
       }
       html += trimmed;
     }
@@ -89,7 +89,10 @@ export default function AdminNormasPage() {
           setContent(data.value);
         }
       })
-      .catch(() => {})
+      .catch((err) => {
+        // Si no se pueden cargar las normas guardadas mantenemos el default.
+        console.warn("normas_rules fetch failed", err);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -146,6 +149,7 @@ export default function AdminNormasPage() {
           <Link
             href="/normas"
             target="_blank"
+            rel="noopener noreferrer"
             className={buttonClassName({ variant: "outline", size: "sm" })}
           >
             <Eye className="h-3.5 w-3.5 mr-1.5" />

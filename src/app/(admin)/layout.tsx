@@ -6,9 +6,9 @@ import { ShieldCheck } from "lucide-react";
 
 export default async function AdminLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   const session = await auth();
   if (!session?.user) {
     redirect("/auth/signin");

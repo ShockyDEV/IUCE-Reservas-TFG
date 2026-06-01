@@ -13,14 +13,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CancelButton } from "../../dashboard/cancel-button";
-
-const STATUS_BADGE = {
-  PENDING: { label: "Pendiente", variant: "warning" as const },
-  APPROVED: { label: "Aprobada", variant: "success" as const },
-  REJECTED: { label: "Rechazada", variant: "danger" as const },
-  CANCELLED: { label: "Cancelada", variant: "secondary" as const },
-  EXPIRED: { label: "Expirada", variant: "secondary" as const },
-};
+import { RESERVATION_STATUS_BADGE } from "@/lib/format";
 
 const dateFmt = new Intl.DateTimeFormat("es-ES", {
   weekday: "long",
@@ -41,9 +34,9 @@ const dateTimeFmt = new Intl.DateTimeFormat("es-ES", {
 
 export default async function ReservationDetailPage({
   params,
-}: {
+}: Readonly<{
   params: { id: string };
-}) {
+}>) {
   const session = await auth();
   if (!session?.user) redirect("/auth/signin");
 
@@ -66,7 +59,9 @@ export default async function ReservationDetailPage({
   const canCancel =
     reservation.status === "PENDING" || reservation.status === "APPROVED";
   const statusBadge =
-    STATUS_BADGE[reservation.status as keyof typeof STATUS_BADGE];
+    RESERVATION_STATUS_BADGE[
+      reservation.status as keyof typeof RESERVATION_STATUS_BADGE
+    ];
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 space-y-6">

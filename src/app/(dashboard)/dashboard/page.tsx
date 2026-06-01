@@ -15,14 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DashboardCalendar } from "@/components/calendar/dashboard-calendar";
 import { CancelButton } from "./cancel-button";
-
-const STATUS_BADGE = {
-  PENDING: { label: "Pendiente", variant: "warning" as const },
-  APPROVED: { label: "Aprobada", variant: "success" as const },
-  REJECTED: { label: "Rechazada", variant: "danger" as const },
-  CANCELLED: { label: "Cancelada", variant: "secondary" as const },
-  EXPIRED: { label: "Expirada", variant: "secondary" as const },
-};
+import { RESERVATION_STATUS_BADGE } from "@/lib/format";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -146,7 +139,10 @@ export default async function DashboardPage() {
             ) : (
               <ul className="space-y-2">
                 {reservations.map((r) => {
-                  const status = STATUS_BADGE[r.status as keyof typeof STATUS_BADGE];
+                  const status =
+                    RESERVATION_STATUS_BADGE[
+                      r.status as keyof typeof RESERVATION_STATUS_BADGE
+                    ];
                   const canCancel = r.status === "PENDING" || r.status === "APPROVED";
                   return (
                     <li

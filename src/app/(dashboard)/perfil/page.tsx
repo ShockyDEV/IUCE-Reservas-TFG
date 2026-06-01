@@ -98,9 +98,9 @@ export default function PerfilPage() {
         <CardContent>
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Email
-              </label>
+              </span>
               <div className="mt-1 flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
                 <Mail className="h-4 w-4 text-gray-400" />
                 {profile.email}

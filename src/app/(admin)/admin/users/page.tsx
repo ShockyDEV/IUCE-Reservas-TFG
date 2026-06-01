@@ -183,20 +183,27 @@ export default function AdminUsersPage() {
         )}
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600" />
-        </div>
-      ) : users.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center py-12 text-center">
-            <UsersIcon className="h-8 w-8 text-gray-300 mb-3" />
-            <p className="text-sm text-gray-500">No hay usuarios registrados</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-2">
-          {users.map((u) => {
+      {(() => {
+        if (loading) {
+          return (
+            <div className="flex justify-center py-12">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600" />
+            </div>
+          );
+        }
+        if (users.length === 0) {
+          return (
+            <Card>
+              <CardContent className="flex flex-col items-center py-12 text-center">
+                <UsersIcon className="h-8 w-8 text-gray-300 mb-3" />
+                <p className="text-sm text-gray-500">No hay usuarios registrados</p>
+              </CardContent>
+            </Card>
+          );
+        }
+        return (
+          <div className="space-y-2">
+            {users.map((u) => {
             const isSelf = session?.user.id === u.id;
             const isTargetSuper = u.role === "SUPER_ADMIN";
             const canChange = !isSelf && (isSuperAdmin || !isTargetSuper);
@@ -276,8 +283,9 @@ export default function AdminUsersPage() {
               </Card>
             );
           })}
-        </div>
-      )}
+          </div>
+        );
+      })()}
     </div>
   );
 }

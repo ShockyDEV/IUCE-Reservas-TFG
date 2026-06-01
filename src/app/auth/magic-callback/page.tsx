@@ -6,6 +6,9 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
+/** Pausa breve antes de redirigir para que el usuario vea el OK. */
+const SUCCESS_REDIRECT_MS = 1200;
+
 function MagicCallbackContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -22,6 +25,8 @@ function MagicCallbackContent() {
       return;
     }
 
+    let redirectTimer: ReturnType<typeof setTimeout> | undefined;
+
     const verify = async () => {
       try {
         const result = await signIn("credentials", {
@@ -35,9 +40,10 @@ function MagicCallbackContent() {
           setErrorMsg("El enlace ha expirado o ya fue utilizado.");
         } else if (result?.ok) {
           setStatus("success");
-          setTimeout(() => {
+          redirectTimer = setTimeout(() => {
+            // Forzamos full reload para que NextAuth lea la sesion nueva.
             window.location.href = "/dashboard";
-          }, 1200);
+          }, SUCCESS_REDIRECT_MS);
         }
       } catch {
         setStatus("error");
@@ -46,6 +52,10 @@ function MagicCallbackContent() {
     };
 
     verify();
+
+    return () => {
+      if (redirectTimer) clearTimeout(redirectTimer);
+    };
   }, [token, email]);
 
   return (

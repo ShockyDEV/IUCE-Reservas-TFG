@@ -4,25 +4,19 @@ import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
+import { RESERVATION_STATUS_BADGE } from "@/lib/format";
 import { ReviewActions } from "./review-actions";
 
-const STATUS_LABEL: Record<string, string> = {
-  PENDING: "Pendiente",
-  APPROVED: "Aprobada",
-  REJECTED: "Rechazada",
-};
-
-const STATUS_VARIANT: Record<string, "warning" | "success" | "danger" | "default"> = {
-  PENDING: "warning",
-  APPROVED: "success",
-  REJECTED: "danger",
-};
+/** Resuelve la etiqueta legible de un estado, con fallback al codigo crudo. */
+const labelFor = (status: string): string =>
+  RESERVATION_STATUS_BADGE[status as keyof typeof RESERVATION_STATUS_BADGE]
+    ?.label ?? status;
 
 export default async function AdminReservationsPage({
   searchParams,
-}: {
+}: Readonly<{
   searchParams: { status?: string };
-}) {
+}>) {
   const status = searchParams.status?.toUpperCase();
   const validStatus =
     status === "PENDING" || status === "APPROVED" || status === "REJECTED"
@@ -92,7 +86,7 @@ export default async function AdminReservationsPage({
                   : "text-gray-600 bg-white border border-gray-200 hover:bg-gray-50"
               }`}
             >
-              {STATUS_LABEL[s]}
+              {labelFor(s)}
               <span
                 className={`rounded-full px-1.5 text-xs font-semibold ${
                   isActive
@@ -112,7 +106,7 @@ export default async function AdminReservationsPage({
           <div className="px-6 py-12 text-center">
             <p className="text-sm text-gray-500">
               No hay reservas con estado{" "}
-              <strong>{STATUS_LABEL[validStatus].toLowerCase()}</strong>.
+              <strong>{labelFor(validStatus).toLowerCase()}</strong>.
             </p>
           </div>
         </Card>
@@ -164,8 +158,14 @@ export default async function AdminReservationsPage({
                       </span>
                     </td>
                     <td className="px-4 py-3 align-top">
-                      <Badge variant={STATUS_VARIANT[r.status] ?? "default"}>
-                        {STATUS_LABEL[r.status] || r.status}
+                      <Badge
+                        variant={
+                          RESERVATION_STATUS_BADGE[
+                            r.status as keyof typeof RESERVATION_STATUS_BADGE
+                          ]?.variant ?? "default"
+                        }
+                      >
+                        {labelFor(r.status)}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 align-top text-right">

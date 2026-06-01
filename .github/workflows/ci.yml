@@ -1,0 +1,100 @@
+name: CI
+
+# Pipeline de integración continua del sistema IUCE Reservas.
+# Se ejecuta en cada push a `develop` o `main` y en cada Pull Request.
+# Garantiza que el código nunca se mergea sin pasar lint, type check y
+# la suite de tests unitarios completa.
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+
+jobs:
+  quality:
+    name: Lint, types y tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: iuce
+          POSTGRES_PASSWORD: iuce2024
+          POSTGRES_DB: iuce_reservas
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U iuce"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DATABASE_URL: postgresql://iuce:iuce2024@localhost:5432/iuce_reservas
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: dummy_secret_for_ci
+      NEXT_PUBLIC_USE_MOCK_AUTH: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar cliente Prisma
+        run: npx prisma generate
+
+      - name: Aplicar esquema a la base de datos
+        run: npx prisma db push --skip-generate
+
+      - name: Ejecutar linter
+        run: npm run lint
+
+      - name: Verificar tipos TypeScript
+        run: npx tsc --noEmit
+
+      - name: Ejecutar suite de tests
+        run: npx vitest run
+
+  build:
+    name: Build de producción
+    runs-on: ubuntu-latest
+    needs: quality
+    timeout-minutes: 15
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    env:
+      DATABASE_URL: postgresql://iuce:iuce2024@localhost:5432/iuce_reservas
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: dummy_secret_for_build
+      SKIP_ENV_VALIDATION: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar cliente Prisma
+        run: npx prisma generate
+
+      - name: Compilar Next.js
+        run: npm run build

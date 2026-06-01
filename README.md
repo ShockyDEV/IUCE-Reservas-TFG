@@ -19,7 +19,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License MIT" />
-  <img src="https://img.shields.io/badge/sprint-8%2F10%20completado-green?style=flat-square" alt="Sprint progress" />
+  <img src="https://img.shields.io/badge/sprint-10%2F10%20completado-success?style=flat-square" alt="Sprint progress" />
   <img src="https://img.shields.io/badge/Next.js-14-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 14" />
   <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 5" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL 16" />
@@ -267,8 +267,8 @@ El proyecto se organiza en 10 sprints (14 abril – 5 junio 2026) y 11 épicas (
 - [x] **Sprint 5** · Recurrencia y BlockedSlot *(11-15 may)*
 - [x] **Sprint 6** · Panel Admin y Audit *(16-20 may)*
 - [x] **Sprint 7** · UX y Mobile *(21-25 may)*
-- [ ] **Sprint 8** · Funcionalidades finales y Despliegue *(26-30 may)*
-- [ ] **Sprint 9** · QA y Release *(31 may - 5 jun)*
+- [x] **Sprint 8** · Funcionalidades finales y Despliegue *(26-30 may)*
+- [x] **Sprint 9** · QA y Release *(31 may - 5 jun)*
 
 <details>
 <summary>Ver epics</summary>
@@ -299,6 +299,7 @@ Cada cierre de hito relevante del proyecto se publica como una **release** versi
 
 | Versión | Estado | Fecha | Contenido principal |
 |---------|--------|-------|---------------------|
+| [`v1.0.0`](https://github.com/ShockyDEV/IUCE-Reservas-TFG/releases/tag/v1.0.0) | Stable | 5 junio 2026 | **Release final**. Cierre de Sprints 8-9: notificaciones in-app, cancelación de reservas, EXPIRED + cron, perfil editable, normas, ban de usuarios, sincronización LDAP USAL, exportación CSV, filtros catálogo, Mis Reservas, /admin/reports, CRUD espacios. Pipeline CI con GitHub Actions, health check, rate limit y guía de despliegue en CPD-USAL. **118 tests** verdes. |
 | [`v0.2.0`](https://github.com/ShockyDEV/IUCE-Reservas-TFG/releases/tag/v0.2.0) | Pre-release | 26 mayo 2026 | Cierre de Sprints 5-7: bloqueos administrativos, reservas recurrentes, panel admin completo con audit log, refinado UX y mobile, suite de tests con Vitest y SonarCloud Quality Gate **Passed**. |
 | [`v0.1.0`](https://github.com/ShockyDEV/IUCE-Reservas-TFG/releases/tag/v0.1.0) | Pre-release | 11 mayo 2026 | Cierre de Sprints 1-4: autenticación con magic link, catálogo de espacios, motor de reservas y flujo de aprobación administrativa con notificaciones por email. |
 

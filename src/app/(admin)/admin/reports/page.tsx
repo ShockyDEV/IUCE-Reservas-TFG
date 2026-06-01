@@ -17,6 +17,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonClassName } from "@/components/ui/button";
+import { getAuditActionLabel } from "@/lib/format";
 
 interface Stats {
   overview: {
@@ -56,23 +57,6 @@ interface Stats {
   }[];
 }
 
-const ACTION_LABEL: Record<string, string> = {
-  RESERVATION_APPROVED: "Reserva aprobada",
-  RESERVATION_REJECTED: "Reserva rechazada",
-  RESERVATION_CANCELLED: "Reserva cancelada",
-  BLOCKED_SLOT_CREATED: "Bloqueo creado",
-  BLOCKED_SLOT_DELETED: "Bloqueo eliminado",
-  USER_ROLE_CHANGED: "Cambio de rol",
-  USER_BANNED: "Usuario suspendido",
-  USER_UNBANNED: "Usuario reactivado",
-  USER_NAME_CHANGED: "Nombre actualizado",
-  SPACE_CREATED: "Espacio creado",
-  SPACE_UPDATED: "Espacio actualizado",
-  SPACE_DEACTIVATED: "Espacio desactivado",
-  SETTING_UPDATED: "Configuración actualizada",
-  EXPORT_CSV: "Exportación CSV",
-};
-
 const dateTimeFmt = new Intl.DateTimeFormat("es-ES", {
   dateStyle: "short",
   timeStyle: "short",
@@ -86,7 +70,10 @@ export default function AdminReportsPage() {
     fetch("/api/admin/stats")
       .then((r) => r.json())
       .then((data) => setStats(data))
-      .catch(() => {})
+      .catch((err) => {
+        // Si el endpoint falla la pagina renderiza el estado "sin datos".
+        console.warn("admin/stats fetch failed", err);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -350,7 +337,7 @@ export default function AdminReportsPage() {
                 >
                   <div className="min-w-0">
                     <p className="font-medium text-gray-900 text-sm truncate">
-                      {ACTION_LABEL[entry.action] ?? entry.action}
+                      {getAuditActionLabel(entry.action)}
                     </p>
                     <p className="text-[11px] text-gray-500 truncate">
                       {entry.userName} · {entry.targetType}

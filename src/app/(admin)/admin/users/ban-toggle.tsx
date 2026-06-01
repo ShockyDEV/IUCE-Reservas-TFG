@@ -14,7 +14,7 @@ interface BanToggleProps {
   onChange: (next: { isBanned: boolean; banReason: string | null }) => void;
 }
 
-export function BanToggle({ userId, userName, isBanned, banReason, onChange }: BanToggleProps) {
+export function BanToggle({ userId, userName, isBanned, banReason, onChange }: Readonly<BanToggleProps>) {
   const [modalOpen, setModalOpen] = useState(false);
   const [reason, setReason] = useState(banReason || "");
   const [saving, setSaving] = useState(false);
@@ -88,10 +88,14 @@ export function BanToggle({ userId, userName, isBanned, banReason, onChange }: B
             <div className="px-5 py-4 space-y-3">
               {!isBanned && (
                 <div>
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <label
+                    htmlFor="ban-reason"
+                    className="text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Motivo (mínimo 5 caracteres)
                   </label>
                   <Textarea
+                    id="ban-reason"
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                     rows={3}

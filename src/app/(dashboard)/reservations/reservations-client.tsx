@@ -12,6 +12,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { RESERVATION_STATUS_BADGE } from "@/lib/format";
 
 const STATUS_OPTIONS = [
   { value: "ALL", label: "Todas" },
@@ -21,17 +22,6 @@ const STATUS_OPTIONS = [
   { value: "CANCELLED", label: "Canceladas" },
   { value: "EXPIRED", label: "Expiradas" },
 ] as const;
-
-const STATUS_BADGE: Record<
-  string,
-  { label: string; variant: "warning" | "success" | "danger" | "secondary" | "default" }
-> = {
-  PENDING: { label: "Pendiente", variant: "warning" },
-  APPROVED: { label: "Aprobada", variant: "success" },
-  REJECTED: { label: "Rechazada", variant: "danger" },
-  CANCELLED: { label: "Cancelada", variant: "secondary" },
-  EXPIRED: { label: "Expirada", variant: "secondary" },
-};
 
 export interface ReservationRow {
   id: string;
@@ -58,9 +48,9 @@ const dayFmt = new Intl.DateTimeFormat("es-ES", {
 
 export function ReservationsClient({
   reservations,
-}: {
+}: Readonly<{
   reservations: ReservationRow[];
-}) {
+}>) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [dateFrom, setDateFrom] = useState("");
@@ -103,12 +93,13 @@ export function ReservationsClient({
         <CardContent className="p-4 sm:p-5 space-y-4">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="lg:col-span-2">
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <label htmlFor="reservations-search" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Buscar por título
               </label>
               <div className="mt-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
+                  id="reservations-search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Reunión de claustro, formación, ..."
@@ -117,10 +108,11 @@ export function ReservationsClient({
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <label htmlFor="reservations-date-from" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Desde
               </label>
               <Input
+                id="reservations-date-from"
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
@@ -128,10 +120,11 @@ export function ReservationsClient({
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <label htmlFor="reservations-date-to" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Hasta
               </label>
               <Input
+                id="reservations-date-to"
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
@@ -209,7 +202,9 @@ export function ReservationsClient({
       ) : (
         <div className="mt-6 space-y-2">
           {filtered.map((r) => {
-            const badge = STATUS_BADGE[r.status] ?? {
+            const badge = RESERVATION_STATUS_BADGE[
+              r.status as keyof typeof RESERVATION_STATUS_BADGE
+            ] ?? {
               label: r.status,
               variant: "default" as const,
             };

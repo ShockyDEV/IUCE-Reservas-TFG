@@ -46,7 +46,7 @@ interface SpaceFormProps {
   mode: "create" | "edit";
 }
 
-export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
+export function SpaceForm({ initialValues, mode }: Readonly<SpaceFormProps>) {
   const router = useRouter();
   const [form, setForm] = useState<SpaceFormValues>(initialValues);
   const [equipmentInput, setEquipmentInput] = useState("");
@@ -172,10 +172,11 @@ export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
         <CardContent className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="space-name" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Nombre <span className="text-usal-red">*</span>
               </label>
               <Input
+                id="space-name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required
@@ -185,10 +186,11 @@ export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="space-code" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Código <span className="text-usal-red">*</span>
               </label>
               <Input
+                id="space-code"
                 value={form.code}
                 onChange={(e) =>
                   setForm({ ...form, code: e.target.value.toUpperCase() })
@@ -204,10 +206,11 @@ export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="space-capacity" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Capacidad <span className="text-usal-red">*</span>
               </label>
               <Input
+                id="space-capacity"
                 type="number"
                 min={1}
                 max={1000}
@@ -215,29 +218,31 @@ export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    capacity: parseInt(e.target.value) || 1,
+                    capacity: Number.parseInt(e.target.value, 10) || 1,
                   })
                 }
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="space-floor" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Planta
               </label>
               <Input
+                id="space-floor"
                 type="number"
                 value={form.floor}
                 onChange={(e) =>
-                  setForm({ ...form, floor: parseInt(e.target.value) || 0 })
+                  setForm({ ...form, floor: Number.parseInt(e.target.value, 10) || 0 })
                 }
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="space-building" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Edificio
               </label>
               <Input
+                id="space-building"
                 value={form.building}
                 onChange={(e) =>
                   setForm({ ...form, building: e.target.value })
@@ -246,10 +251,11 @@ export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label htmlFor="space-description" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Descripción
               </label>
               <Textarea
+                id="space-description"
                 value={form.description}
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
@@ -269,11 +275,12 @@ export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label htmlFor="space-equipment" className="block text-sm font-medium text-gray-700 mb-1.5">
               Equipamiento
             </label>
             <div className="flex gap-2 mb-2">
               <Input
+                id="space-equipment"
                 value={equipmentInput}
                 onChange={(e) => setEquipmentInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -340,9 +347,9 @@ export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <span className="block text-sm font-medium text-gray-700 mb-1.5">
               Color identificativo
-            </label>
+            </span>
             <div className="flex flex-wrap gap-2">
               {PRESET_COLORS.map((c) => (
                 <button
@@ -364,14 +371,16 @@ export function SpaceForm({ initialValues, mode }: SpaceFormProps) {
                 onChange={(e) => setForm({ ...form, color: e.target.value })}
                 className="h-8 w-12 rounded border border-gray-200 cursor-pointer"
                 title="Color personalizado"
+                aria-label="Color personalizado"
               />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label htmlFor="space-image-url" className="block text-sm font-medium text-gray-700 mb-1.5">
               URL de imagen (opcional)
             </label>
             <Input
+              id="space-image-url"
               value={form.imageUrl}
               onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
               maxLength={300}
