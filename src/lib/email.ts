@@ -75,7 +75,7 @@ function reservationDetailsBlock(data: ReservationEmailData): string {
       <tr><td style="padding:12px 0 6px;"><strong style="color:#6b7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Fecha y hora</strong></td></tr>
       <tr><td style="padding:4px 0;font-size:14px;color:#374151;">${data.date} · ${data.timeRange}</td></tr>
       <tr><td style="padding:12px 0 6px;"><strong style="color:#6b7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Asistentes</strong></td></tr>
-      <tr><td style="padding:4px 0;font-size:14px;color:#374151;">${data.attendees} persona${data.attendees !== 1 ? "s" : ""}</td></tr>
+      <tr><td style="padding:4px 0;font-size:14px;color:#374151;">${data.attendees} persona${data.attendees === 1 ? "" : "s"}</td></tr>
     </table>`;
 }
 
@@ -153,48 +153,94 @@ export async function sendNewRequestToAdminEmail(data: ReservationEmailData, adm
   });
 }
 
+/**
+ * Configuración visual y de copia para los dos posibles desenlaces de una
+ * solicitud de reserva. Extraído como tabla constante para evitar ternarios
+ * anidados en el template del email (regla typescript:S3358 / S4624) y para
+ * bajar la cognitive complexity del handler.
+ */
+const DECISION_THEME = {
+  APPROVED: {
+    heading: "¡Reserva aprobada!",
+    badgeBg: "#ECFDF3",
+    badgeColor: "#027A48",
+    badgeLabel: "Estado: APROBADA",
+    buttonColor: "#12B76A",
+    subjectPrefix: "Reserva aprobada",
+    notesBlockBg: "#EFF8FF",
+    notesBorder: "#3B7DD8",
+    notesTitleColor: "#1B3A5C",
+    notesTitle: "Notas del administrador:",
+    statusVerb: "aprobada",
+  },
+  REJECTED: {
+    heading: "Reserva no aprobada",
+    badgeBg: "#FEF3F2",
+    badgeColor: "#B42318",
+    badgeLabel: "Estado: RECHAZADA",
+    buttonColor: "#1B3A5C",
+    subjectPrefix: "Reserva no aprobada",
+    notesBlockBg: "#FEF3F2",
+    notesBorder: "#D92D20",
+    notesTitleColor: "#B42318",
+    notesTitle: "Motivo:",
+    statusVerb: "rechazada",
+  },
+} as const;
+
+function buildDecisionIntro(
+  decision: "APPROVED" | "REJECTED",
+  userName: string,
+  reviewerName?: string,
+): string {
+  if (decision === "REJECTED") {
+    return `Hola ${userName}, lamentamos informarte de que tu solicitud de reserva no ha sido aprobada.`;
+  }
+  const reviewerSuffix = reviewerName ? ` por ${reviewerName}` : "";
+  return `Hola ${userName}, tu reserva ha sido aprobada${reviewerSuffix}.`;
+}
+
+function buildNotesBlock(
+  adminNotes: string | undefined,
+  theme: (typeof DECISION_THEME)[keyof typeof DECISION_THEME],
+): string {
+  if (!adminNotes) return "";
+  return `
+      <div style="background-color:${theme.notesBlockBg};border-left:3px solid ${theme.notesBorder};padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;">
+        <p style="margin:0 0 4px;color:${theme.notesTitleColor};font-size:12px;font-weight:600;">
+          ${theme.notesTitle}
+        </p>
+        <p style="margin:0;color:#374151;font-size:13px;">${adminNotes}</p>
+      </div>
+    `;
+}
+
 /** Email enviado al usuario cuando un admin aprueba o rechaza su reserva. */
 export async function sendReservationDecisionEmail(
   data: ReservationEmailData,
   decision: "APPROVED" | "REJECTED"
 ) {
-  const isApproved = decision === "APPROVED";
-  const heading = isApproved ? "¡Reserva aprobada!" : "Reserva no aprobada";
-  const intro = isApproved
-    ? `Hola ${data.userName}, tu reserva ha sido aprobada${data.reviewerName ? ` por ${data.reviewerName}` : ""}.`
-    : `Hola ${data.userName}, lamentamos informarte de que tu solicitud de reserva no ha sido aprobada.`;
-  const badgeBg = isApproved ? "#ECFDF3" : "#FEF3F2";
-  const badgeColor = isApproved ? "#027A48" : "#B42318";
-  const badgeLabel = isApproved ? "Estado: APROBADA" : "Estado: RECHAZADA";
-  const buttonColor = isApproved ? "#12B76A" : "#1B3A5C";
-  const subjectPrefix = isApproved ? "Reserva aprobada" : "Reserva no aprobada";
-
-  const notesBlock = data.adminNotes
-    ? `
-      <div style="background-color:${isApproved ? "#EFF8FF" : "#FEF3F2"};border-left:3px solid ${isApproved ? "#3B7DD8" : "#D92D20"};padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;">
-        <p style="margin:0 0 4px;color:${isApproved ? "#1B3A5C" : "#B42318"};font-size:12px;font-weight:600;">
-          ${isApproved ? "Notas del administrador:" : "Motivo:"}
-        </p>
-        <p style="margin:0;color:#374151;font-size:13px;">${data.adminNotes}</p>
-      </div>
-    `
-    : "";
+  const theme = DECISION_THEME[decision];
+  const intro = buildDecisionIntro(decision, data.userName, data.reviewerName);
+  const notesBlock = buildNotesBlock(data.adminNotes, theme);
 
   const content = `
-    <h2 style="margin:0 0 8px;color:#111827;font-size:18px;">${heading}</h2>
+    <h2 style="margin:0 0 8px;color:#111827;font-size:18px;">${theme.heading}</h2>
     <p style="margin:0 0 16px;color:#6b7280;font-size:14px;line-height:1.6;">${intro}</p>
-    <div style="display:inline-block;background-color:${badgeBg};color:${badgeColor};padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;margin-bottom:8px;">
-      ${badgeLabel}
+    <div style="display:inline-block;background-color:${theme.badgeBg};color:${theme.badgeColor};padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;margin-bottom:8px;">
+      ${theme.badgeLabel}
     </div>
     ${reservationDetailsBlock(data)}
     ${notesBlock}
-    ${buttonBlock("Ver mis reservas", `${APP_URL}/dashboard`, buttonColor)}
+    ${buttonBlock("Ver mis reservas", `${APP_URL}/dashboard`, theme.buttonColor)}
   `;
+
+  const preheader = `Tu reserva para ${data.spaceName} ha sido ${theme.statusVerb}.`;
 
   return sendEmail({
     to: data.userEmail,
-    subject: `${subjectPrefix}: ${data.title}`,
-    html: baseTemplate(content, `Tu reserva para ${data.spaceName} ha sido ${isApproved ? "aprobada" : "rechazada"}.`),
+    subject: `${theme.subjectPrefix}: ${data.title}`,
+    html: baseTemplate(content, preheader),
   });
 }
 

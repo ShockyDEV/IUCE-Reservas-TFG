@@ -42,7 +42,7 @@ function MagicCallbackContent() {
           setStatus("success");
           redirectTimer = setTimeout(() => {
             // Forzamos full reload para que NextAuth lea la sesion nueva.
-            window.location.href = "/dashboard";
+            globalThis.location.href = "/dashboard";
           }, SUCCESS_REDIRECT_MS);
         }
       } catch {

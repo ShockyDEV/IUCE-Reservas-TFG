@@ -115,8 +115,8 @@ export default async function NormasPage() {
       </Card>
 
       <p className="text-xs text-gray-400 text-center">
-        Para cualquier duda sobre las normas, contacta con la administración del IUCE en
-        <a href="mailto:iuce.tecnico@usal.es" className="ml-1 underline hover:text-iuce-blue">
+        Para cualquier duda sobre las normas, contacta con la administración del IUCE en{" "}
+        <a href="mailto:iuce.tecnico@usal.es" className="underline hover:text-iuce-blue">
           iuce.tecnico@usal.es
         </a>
         .

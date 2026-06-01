@@ -29,7 +29,7 @@ export const MAX_RECURRENCE_OCCURRENCES = 52;
  */
 export function generateRecurrenceDates(
   baseDate: Date,
-  pattern: RecurrencePattern | string,
+  pattern: string,
   endDate: Date,
 ): Date[] {
   const dates: Date[] = [new Date(baseDate)];

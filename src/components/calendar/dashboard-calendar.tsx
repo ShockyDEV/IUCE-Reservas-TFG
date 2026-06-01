@@ -7,7 +7,8 @@ export interface DashboardCalendarEntry {
   id: string;
   startTime: string | Date;
   spaceColor: string;
-  status: "PENDING" | "APPROVED" | "REJECTED" | string;
+  /** Estado de la reserva: PENDING/APPROVED/REJECTED u otro valor recibido del backend. */
+  status: string;
 }
 
 interface DashboardCalendarProps {
@@ -70,16 +71,16 @@ export function DashboardCalendar({ reservations = [] }: Readonly<DashboardCalen
           {cells.map((day, i) => {
             const entries = entriesForDay(day);
             const isToday = day && isSameDay(day, today);
+            let dayClass = "";
+            if (day) {
+              dayClass = isToday
+                ? "bg-iuce-blue-pale text-iuce-blue-dark font-semibold"
+                : "text-gray-700 hover:bg-gray-50";
+            }
             return (
               <div
                 key={day ? day.toISOString() : `empty-${i}`}
-                className={`h-9 rounded-md flex flex-col items-center justify-center text-xs ${
-                  day
-                    ? isToday
-                      ? "bg-iuce-blue-pale text-iuce-blue-dark font-semibold"
-                      : "text-gray-700 hover:bg-gray-50"
-                    : ""
-                }`}
+                className={`h-9 rounded-md flex flex-col items-center justify-center text-xs ${dayClass}`}
               >
                 {day ? day.getDate() : ""}
                 {entries.length > 0 && (

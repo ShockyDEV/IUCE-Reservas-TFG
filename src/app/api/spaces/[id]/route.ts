@@ -15,7 +15,7 @@ export async function GET(
     where: { id: params.id },
   });
 
-  if (!space || !space.isActive) {
+  if (!space?.isActive) {
     return NextResponse.json({ error: "Espacio no encontrado" }, { status: 404 });
   }
 

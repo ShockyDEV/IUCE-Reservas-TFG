@@ -7,19 +7,21 @@ import { fetchPersonFromUSAL } from "@/lib/usal-directory";
  */
 
 describe("fetchPersonFromUSAL", () => {
-  const originalFetch = global.fetch;
+  const originalFetch = globalThis.fetch;
+  let mockFetch: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    global.fetch = vi.fn();
+    mockFetch = vi.fn();
+    globalThis.fetch = mockFetch;
   });
 
   afterEach(() => {
-    global.fetch = originalFetch;
+    globalThis.fetch = originalFetch;
     vi.restoreAllMocks();
   });
 
   it("devuelve null cuando el endpoint responde con status != 2xx", async () => {
-    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: false,
       status: 500,
       json: async () => ({}),
@@ -29,7 +31,7 @@ describe("fetchPersonFromUSAL", () => {
   });
 
   it("devuelve null cuando lista está vacía", async () => {
-    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({ lista: {} }),
     });
@@ -38,7 +40,7 @@ describe("fetchPersonFromUSAL", () => {
   });
 
   it("devuelve null si la respuesta no tiene info=OK", async () => {
-    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
         lista: {
@@ -51,7 +53,7 @@ describe("fetchPersonFromUSAL", () => {
   });
 
   it("devuelve null si la respuesta no incluye nombre", async () => {
-    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({ lista: { "0": { info: "OK" } } }),
     });
@@ -60,7 +62,7 @@ describe("fetchPersonFromUSAL", () => {
   });
 
   it("convierte la respuesta a Title Case y compone nombre + apellidos", async () => {
-    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
         lista: {
@@ -84,7 +86,7 @@ describe("fetchPersonFromUSAL", () => {
   });
 
   it("acepta entrada con solo nombre sin apellidos", async () => {
-    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
         lista: { "0": { nombre: "JUAN", info: "OK" } },
@@ -95,16 +97,15 @@ describe("fetchPersonFromUSAL", () => {
   });
 
   it("envía POST con peticion=VER_DATOS y mail = prefijo del email", async () => {
-    const mock = vi.fn().mockResolvedValue({
+    mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({ lista: {} }),
     });
-    global.fetch = mock;
 
     await fetchPersonFromUSAL("solmos@usal.es");
 
-    expect(mock).toHaveBeenCalledOnce();
-    const [url, init] = mock.mock.calls[0] as [string, RequestInit];
+    expect(mockFetch).toHaveBeenCalledOnce();
+    const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
     expect(url).toBe("https://directorio.usal.es/src/AgendaBusqueda.php");
     expect(init.method).toBe("POST");
     const body = String(init.body);
@@ -113,9 +114,7 @@ describe("fetchPersonFromUSAL", () => {
   });
 
   it("captura excepciones de red y devuelve null", async () => {
-    (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValue(
-      new Error("network down")
-    );
+    mockFetch.mockRejectedValue(new Error("network down"));
     const result = await fetchPersonFromUSAL("fallo@usal.es");
     expect(result).toBeNull();
   });

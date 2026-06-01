@@ -215,7 +215,7 @@ export async function POST(req: NextRequest) {
   } = parsed.data;
 
   const space = await prisma.space.findUnique({ where: { id: spaceId } });
-  if (!space || !space.isActive) {
+  if (!space?.isActive) {
     return NextResponse.json(
       { error: "Espacio no encontrado o inactivo" },
       { status: 404 }

@@ -191,30 +191,38 @@ export default async function AdminReservationDetailPage({
         </Card>
       </div>
 
-      {reservation.status === "PENDING" ? (
-        <Card className="border-warning-500/20 bg-warning-50/20">
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-warning-500" />
-              Acción del administrador
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ReviewActions reservationId={reservation.id} />
-          </CardContent>
-        </Card>
-      ) : reservation.adminNotes ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Notas del administrador</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap">
-              {reservation.adminNotes}
-            </p>
-          </CardContent>
-        </Card>
-      ) : null}
+      {(() => {
+        if (reservation.status === "PENDING") {
+          return (
+            <Card className="border-warning-500/20 bg-warning-50/20">
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4 text-warning-500" />
+                  Acción del administrador
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ReviewActions reservationId={reservation.id} />
+              </CardContent>
+            </Card>
+          );
+        }
+        if (reservation.adminNotes) {
+          return (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Notas del administrador</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap">
+                  {reservation.adminNotes}
+                </p>
+              </CardContent>
+            </Card>
+          );
+        }
+        return null;
+      })()}
     </div>
   );
 }
