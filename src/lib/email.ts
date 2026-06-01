@@ -1,8 +1,23 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.EMAIL_FROM || "IUCE Reservas <onboarding@resend.dev>";
 const APP_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+/**
+ * Inicialización perezosa del cliente Resend.
+ *
+ * `new Resend(undefined)` lanza inmediatamente "Missing API key", lo que
+ * rompía el `next build` en entornos sin `RESEND_API_KEY` (CI / build de
+ * producción sin secretos). Diferimos la construcción al momento de
+ * enviar el email, donde ya se comprueba la presencia de la clave.
+ */
+let resendSingleton: Resend | null = null;
+function getResendClient(apiKey: string): Resend {
+  if (!resendSingleton) {
+    resendSingleton = new Resend(apiKey);
+  }
+  return resendSingleton;
+}
 
 // ============================================
 // Types
@@ -335,12 +350,14 @@ export function buildReservationEmailData(reservation: {
 // Envío real vía Resend
 // ============================================
 async function sendEmail({ to, subject, html }: { to: string | string[]; subject: string; html: string }) {
-  if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "re_placeholder") {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey || apiKey === "re_placeholder") {
     console.log(`[DEV] Email no enviado (sin API key): ${subject} → ${to}`);
     return { success: true, dev: true };
   }
 
   try {
+    const resend = getResendClient(apiKey);
     const result = await resend.emails.send({
       from: FROM_EMAIL,
       to: Array.isArray(to) ? to : [to],
