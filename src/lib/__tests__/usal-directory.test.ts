@@ -108,7 +108,10 @@ describe("fetchPersonFromUSAL", () => {
     const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
     expect(url).toBe("https://directorio.usal.es/src/AgendaBusqueda.php");
     expect(init.method).toBe("POST");
-    const body = String(init.body);
+    // El cliente serializa el body con URLSearchParams.toString() antes de
+    // pasarlo a fetch, así que aquí siempre es string.
+    expect(typeof init.body).toBe("string");
+    const body = init.body as string;
     expect(body).toContain("peticion=VER_DATOS");
     expect(body).toContain("mail=solmos");
   });

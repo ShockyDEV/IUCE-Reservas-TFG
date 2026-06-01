@@ -18,11 +18,9 @@ import {
 import { cn } from "@/lib/cn";
 import { NotificationDropdown } from "@/components/layout/notification-dropdown";
 
-/** Rol enviado por la sesión: típicamente USER/ADMIN/SUPER_ADMIN. */
-type Role = string;
-
 interface NavbarProps {
-  user: { name: string; email: string; role: Role };
+  /** El rol se recibe como string crudo de la sesión (USER/ADMIN/SUPER_ADMIN). */
+  user: { name: string; email: string; role: string };
 }
 
 const PUBLIC_ITEMS = [
@@ -36,7 +34,7 @@ const USER_MENU_ITEMS = [
   { href: "/perfil", label: "Mi perfil", icon: UserIcon },
 ];
 
-function isAdmin(role: Role): boolean {
+function isAdmin(role: string): boolean {
   return role === "ADMIN" || role === "SUPER_ADMIN";
 }
 

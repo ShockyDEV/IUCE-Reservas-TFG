@@ -119,7 +119,7 @@ export default async function NormasPage() {
         <a href="mailto:iuce.tecnico@usal.es" className="underline hover:text-iuce-blue">
           iuce.tecnico@usal.es
         </a>
-        .
+        <span>.</span>
       </p>
     </div>
   );
