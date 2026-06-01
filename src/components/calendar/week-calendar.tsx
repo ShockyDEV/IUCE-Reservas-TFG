@@ -135,7 +135,7 @@ export function WeekCalendar({
           <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b border-gray-100 pb-2 text-center text-xs font-medium text-gray-500">
             <div />
             {days.map((d, i) => (
-              <div key={i}>
+              <div key={d.toISOString()}>
                 <p>{DAY_LABELS[i]}</p>
                 <p className="text-gray-900 font-semibold">
                   {formatDayHeader(d)}
@@ -154,7 +154,7 @@ export function WeekCalendar({
                 </div>
               ))}
             </div>
-            {days.map((day, i) => {
+            {days.map((day) => {
               const dayStart = day.getTime();
               const dayEnd = dayStart + MS_PER_DAY;
               const dayReservations = reservations.filter((r) => {
@@ -167,7 +167,7 @@ export function WeekCalendar({
               });
               return (
                 <div
-                  key={i}
+                  key={day.toISOString()}
                   className="relative border-l border-gray-100"
                   style={{ height: `${hours.length * 48}px` }}
                 >

@@ -72,7 +72,7 @@ export function DashboardCalendar({ reservations = [] }: Readonly<DashboardCalen
             const isToday = day && isSameDay(day, today);
             return (
               <div
-                key={i}
+                key={day ? day.toISOString() : `empty-${i}`}
                 className={`h-9 rounded-md flex flex-col items-center justify-center text-xs ${
                   day
                     ? isToday
