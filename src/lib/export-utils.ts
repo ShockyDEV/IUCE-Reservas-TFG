@@ -46,21 +46,26 @@ export interface ExportAuditEntry {
 
 /** Escapa un valor individual según RFC 4180. */
 export function escapeCsvField(value: unknown): string {
-  if (value === null || value === undefined) return "";
-  // Number, boolean, bigint, string → toString; Date → ISO; Object → JSON.
-  let str: string;
-  if (typeof value === "string") {
-    str = value;
-  } else if (value instanceof Date) {
-    str = value.toISOString();
-  } else if (typeof value === "object") {
-    str = JSON.stringify(value);
-  } else {
-    str = String(value);
-  }
+  const str = csvStringify(value);
   const needsQuoting = /[",\r\n]/.test(str);
   if (!needsQuoting) return str;
   return `"${str.replaceAll('"', '""')}"`;
+}
+
+/**
+ * Convierte cualquier valor a una representación CSV-friendly. Evita la
+ * estringificación por defecto `[object Object]` para objetos (regla
+ * typescript:S6551) y formatea las fechas como ISO.
+ */
+function csvStringify(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") {
+    return value.toString();
+  }
+  if (typeof value === "bigint") return value.toString();
+  if (value instanceof Date) return value.toISOString();
+  return JSON.stringify(value);
 }
 
 /** Construye un CSV a partir de cabecera + filas. Prepende BOM para Excel. */
