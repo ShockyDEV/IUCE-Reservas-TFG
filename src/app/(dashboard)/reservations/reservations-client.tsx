@@ -12,6 +12,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { RESERVATION_STATUS_BADGE } from "@/lib/format";
 
 const STATUS_OPTIONS = [
   { value: "ALL", label: "Todas" },
@@ -21,17 +22,6 @@ const STATUS_OPTIONS = [
   { value: "CANCELLED", label: "Canceladas" },
   { value: "EXPIRED", label: "Expiradas" },
 ] as const;
-
-const STATUS_BADGE: Record<
-  string,
-  { label: string; variant: "warning" | "success" | "danger" | "secondary" | "default" }
-> = {
-  PENDING: { label: "Pendiente", variant: "warning" },
-  APPROVED: { label: "Aprobada", variant: "success" },
-  REJECTED: { label: "Rechazada", variant: "danger" },
-  CANCELLED: { label: "Cancelada", variant: "secondary" },
-  EXPIRED: { label: "Expirada", variant: "secondary" },
-};
 
 export interface ReservationRow {
   id: string;
@@ -212,7 +202,9 @@ export function ReservationsClient({
       ) : (
         <div className="mt-6 space-y-2">
           {filtered.map((r) => {
-            const badge = STATUS_BADGE[r.status] ?? {
+            const badge = RESERVATION_STATUS_BADGE[
+              r.status as keyof typeof RESERVATION_STATUS_BADGE
+            ] ?? {
               label: r.status,
               variant: "default" as const,
             };

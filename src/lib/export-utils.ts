@@ -8,19 +8,7 @@
  * el bundle ligero.
  */
 
-const STATUS_LABELS: Record<string, string> = {
-  PENDING: "Pendiente",
-  APPROVED: "Aprobada",
-  REJECTED: "Rechazada",
-  CANCELLED: "Cancelada",
-  EXPIRED: "Expirada",
-};
-
-const ROLE_LABELS: Record<string, string> = {
-  USER: "Usuario",
-  ADMIN: "Administrador",
-  SUPER_ADMIN: "Super Administrador",
-};
+import { RESERVATION_STATUS_BADGE, ROLE_LABEL } from "@/lib/format";
 
 export interface ExportReservation {
   id: string;
@@ -116,7 +104,8 @@ export function reservationsToCsv(reservations: ExportReservation[]): string {
     fmtTime(r.startTime),
     fmtTime(r.endTime),
     r.attendees,
-    STATUS_LABELS[r.status] || r.status,
+    RESERVATION_STATUS_BADGE[r.status as keyof typeof RESERVATION_STATUS_BADGE]
+      ?.label || r.status,
     r.reviewedBy?.name || "",
     r.adminNotes || "",
   ]);
@@ -138,7 +127,7 @@ export function usersToCsv(users: ExportUser[]): string {
     u.id,
     u.name,
     u.email,
-    ROLE_LABELS[u.role] || u.role,
+    ROLE_LABEL[u.role] || u.role,
     u.isBanned ? "Sí" : "No",
     u.banReason || "",
     fmtDate(u.createdAt),
