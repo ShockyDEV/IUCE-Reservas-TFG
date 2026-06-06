@@ -86,13 +86,15 @@ describe("reservationsToCsv", () => {
     reviewedBy: { name: "IUCE Tecnico" },
   };
 
-  it("incluye la cabecera estándar de reservas", () => {
+  it("incluye la cabecera estándar de reservas (sin ID interna)", () => {
     const csv = reservationsToCsv([sample]);
-    expect(csv).toContain("ID");
     expect(csv).toContain("Título");
     expect(csv).toContain("Espacio");
     expect(csv).toContain("Asistentes");
     expect(csv).toContain("Estado");
+    // El identificador interno de la reserva no se expone al usuario final
+    // porque no aporta valor en una vista en Excel.
+    expect(csv).not.toContain("res_1");
   });
 
   it("traduce el estado APPROVED a Aprobada", () => {

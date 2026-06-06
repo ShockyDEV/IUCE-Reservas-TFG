@@ -199,8 +199,8 @@ export default function PerfilPage() {
               usuario crea una nueva solicitud de reserva pendiente de
               revisión.
             </p>
-            <label className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-              <span className="flex flex-col">
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+              <div className="flex flex-col">
                 <span className="text-sm font-medium text-gray-900">
                   Recibir avisos por email
                 </span>
@@ -209,11 +209,12 @@ export default function PerfilPage() {
                     ? "Recibirás un email por cada nueva solicitud pendiente."
                     : "No recibirás emails; tendrás que entrar al panel para verlas."}
                 </span>
-              </span>
+              </div>
               <button
                 type="button"
                 role="switch"
                 aria-checked={profile.receiveAdminEmails}
+                aria-label="Alternar avisos por email"
                 disabled={updatingPref}
                 onClick={() => toggleAdminEmails(!profile.receiveAdminEmails)}
                 className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors ${
@@ -222,7 +223,6 @@ export default function PerfilPage() {
                     : "bg-gray-300"
                 } ${updatingPref ? "opacity-60 cursor-wait" : "cursor-pointer"}`}
               >
-                <span className="sr-only">Alternar avisos por email</span>
                 <span
                   className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
                     profile.receiveAdminEmails
@@ -231,7 +231,7 @@ export default function PerfilPage() {
                   }`}
                 />
               </button>
-            </label>
+            </div>
             <p className="text-[11px] text-gray-400">
               Las solicitudes seguirán apareciendo en{" "}
               <span className="font-medium text-gray-600">
