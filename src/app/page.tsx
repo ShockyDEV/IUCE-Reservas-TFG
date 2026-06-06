@@ -4,6 +4,7 @@ import { ArrowRight, CalendarCheck, Building2, Users, ShieldCheck } from "lucide
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { InstitutionalFooter } from "@/components/layout/institutional-footer";
 
 const HIGHLIGHT_SPACES = [
   { name: "Aula 17A", code: "IUCE-17A", capacity: 40, img: "/images/spaces/aula-17a.jpg" },
@@ -130,12 +131,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="border-t border-gray-200 bg-white py-6">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 text-xs text-gray-500 sm:flex-row">
-          <p>© {new Date().getFullYear()} IUCE — Universidad de Salamanca</p>
-          <p>Plataforma institucional de reservas de espacios</p>
-        </div>
-      </footer>
+      <InstitutionalFooter />
     </main>
   );
 }
