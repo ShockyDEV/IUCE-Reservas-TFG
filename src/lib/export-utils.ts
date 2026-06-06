@@ -110,7 +110,6 @@ function fmtTime(d: Date | string): string {
 
 export function reservationsToCsv(reservations: ExportReservation[]): string {
   const headers = [
-    "ID",
     "Título",
     "Espacio",
     "Código",
@@ -125,7 +124,6 @@ export function reservationsToCsv(reservations: ExportReservation[]): string {
     "Notas administración",
   ];
   const rows = reservations.map((r) => [
-    r.id,
     r.title,
     r.space.name,
     r.space.code,
@@ -145,7 +143,6 @@ export function reservationsToCsv(reservations: ExportReservation[]): string {
 
 export function usersToCsv(users: ExportUser[]): string {
   const headers = [
-    "ID",
     "Nombre",
     "Email",
     "Rol",
@@ -155,7 +152,6 @@ export function usersToCsv(users: ExportUser[]): string {
     "Último login",
   ];
   const rows = users.map((u) => [
-    u.id,
     u.name,
     u.email,
     ROLE_LABEL[u.role] || u.role,
