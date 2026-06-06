@@ -168,7 +168,7 @@ export function SpacesCatalog({ spaces, equipmentOptions }: Readonly<SpacesCatal
         const has = selectedEquipment.every((eq) => s.equipment.includes(eq));
         if (!has) return false;
       }
-      if (busySpaceIds && busySpaceIds.has(s.id)) return false;
+      if (busySpaceIds?.has(s.id)) return false;
       return true;
     });
   }, [spaces, minCapacity, accessibilityOnly, selectedEquipment, busySpaceIds]);
