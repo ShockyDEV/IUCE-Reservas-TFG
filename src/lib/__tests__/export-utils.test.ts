@@ -67,7 +67,7 @@ describe("buildCsv", () => {
   it("no rompe los acentos: el BOM es el primer byte y no hay directiva sep=", () => {
     const csv = buildCsv(["Acción"], [["Reunión"]]);
     // El segundo carácter debe ser ya el contenido, no `sep=`.
-    expect(csv.charCodeAt(0)).toBe(0xfeff);
+    expect(csv.codePointAt(0)).toBe(0xfeff);
     expect(csv.slice(1, 7)).toBe("Acción");
   });
 });
