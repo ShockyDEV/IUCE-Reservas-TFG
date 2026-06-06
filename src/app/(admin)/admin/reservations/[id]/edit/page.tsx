@@ -59,10 +59,8 @@ export default async function AdminReservationEditPage({
         </h1>
         <p className="mt-2 text-sm text-gray-500 max-w-2xl">
           Edita los datos de la reserva del usuario{" "}
-          <span className="font-medium text-gray-700">
-            {reservation.user.name}
-          </span>
-          . El solicitante recibirá un email con el detalle de los cambios
+          <span className="font-medium text-gray-700">{reservation.user.name}</span>.
+          El solicitante recibirá un email con el detalle de los cambios
           aplicados.
         </p>
       </div>

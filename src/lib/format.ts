@@ -13,8 +13,6 @@ export const RESERVATION_STATUS_BADGE = {
   EXPIRED: { label: "Expirada", variant: "secondary" as const },
 };
 
-export type ReservationStatusKey = keyof typeof RESERVATION_STATUS_BADGE;
-
 export const ROLE_LABEL: Record<string, string> = {
   USER: "Usuario",
   ADMIN: "Administrador",
@@ -67,9 +65,4 @@ export function parseEquipment(value: unknown): string[] {
 /** Etiqueta legible para una acción del audit log, con fallback al code. */
 export function getAuditActionLabel(action: string): string {
   return AUDIT_ACTION_LABEL[action] ?? action;
-}
-
-/** Etiqueta legible para un rol, con fallback al code. */
-export function getRoleLabel(role: string): string {
-  return ROLE_LABEL[role] ?? role;
 }

@@ -3,7 +3,6 @@ import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { createReservationSchema } from "@/lib/validations";
-import { ReservationStatus } from "@prisma/client";
 import {
   generateRecurrenceDates,
   MAX_RECURRENCE_OCCURRENCES,
@@ -120,31 +119,6 @@ async function createRecurringReservations(args: {
     },
     { status: 201 },
   );
-}
-
-export async function GET(req: NextRequest) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
-
-  const { searchParams } = new URL(req.url);
-  const status = searchParams.get("status");
-  const spaceId = searchParams.get("spaceId");
-
-  const reservations = await prisma.reservation.findMany({
-    where: {
-      userId: session.user.id,
-      ...(status ? { status: status as ReservationStatus } : {}),
-      ...(spaceId ? { spaceId } : {}),
-    },
-    include: {
-      space: { select: { id: true, name: true, code: true, color: true } },
-    },
-    orderBy: { startTime: "desc" },
-  });
-
-  return NextResponse.json(reservations);
 }
 
 export async function POST(req: NextRequest) {

@@ -7,36 +7,6 @@ import {
 } from "@/lib/email";
 import { logAudit } from "@/lib/audit";
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
-
-  const reservation = await prisma.reservation.findUnique({
-    where: { id: params.id },
-    include: {
-      space: true,
-      user: { select: { id: true, name: true, email: true } },
-      reviewedBy: { select: { name: true } },
-    },
-  });
-
-  if (!reservation) {
-    return NextResponse.json({ error: "Reserva no encontrada" }, { status: 404 });
-  }
-
-  const isAdmin = session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN";
-  if (reservation.userId !== session.user.id && !isAdmin) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
-  }
-
-  return NextResponse.json(reservation);
-}
-
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -57,7 +27,7 @@ export async function PATCH(
   const isAdmin = session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN";
 
   // Cancelación por el propietario (o admin)
-  if (body.status === "CANCELLED" || body.action === "cancel") {
+  if (body.status === "CANCELLED") {
     if (reservation.userId !== session.user.id && !isAdmin) {
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
