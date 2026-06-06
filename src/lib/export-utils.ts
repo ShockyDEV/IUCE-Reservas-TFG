@@ -68,13 +68,23 @@ function csvStringify(value: unknown): string {
   return JSON.stringify(value);
 }
 
-/** Construye un CSV a partir de cabecera + filas. Prepende BOM para Excel. */
+/**
+ * Construye un CSV a partir de cabecera + filas. La salida lleva:
+ *   - BOM UTF-8 al principio (﻿) para que Excel detecte la codificación.
+ *   - Una línea `sep=,` justo después del BOM para forzar a Excel a usar la
+ *     coma como separador independientemente del locale del sistema
+ *     (Excel-ES por defecto interpreta `,` como separador decimal y usa
+ *     `;` para CSV, lo que hacía que toda la fila apareciera en una sola
+ *     columna). El resto de programas RFC 4180 (LibreOffice, scripts,
+ *     pandas, etc.) interpretan esa línea como un comentario o la ignoran.
+ *   - Líneas separadas por CRLF (\r\n) según RFC 4180.
+ */
 export function buildCsv(headers: string[], rows: unknown[][]): string {
   const lines = [headers.map(escapeCsvField).join(",")];
   for (const row of rows) {
     lines.push(row.map(escapeCsvField).join(","));
   }
-  return "﻿" + lines.join("\r\n");
+  return "﻿sep=,\r\n" + lines.join("\r\n");
 }
 
 function fmtDate(d: Date | string): string {
