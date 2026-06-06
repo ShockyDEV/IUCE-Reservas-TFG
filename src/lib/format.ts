@@ -23,8 +23,10 @@ export const ROLE_LABEL: Record<string, string> = {
 
 export const AUDIT_ACTION_LABEL: Record<string, string> = {
   RESERVATION_APPROVED: "Reserva aprobada",
-  RESERVATION_REJECTED: "Reserva rechazada",
-  RESERVATION_CANCELLED: "Reserva cancelada",
+  RESERVATION_REJECTED: "Reserva rechazada (revisión)",
+  RESERVATION_REJECTED_AFTER_APPROVAL: "Reserva anulada por administración",
+  RESERVATION_CANCELLED: "Reserva cancelada por el usuario",
+  RESERVATION_MODIFIED_BY_ADMIN: "Reserva modificada por administración",
   BLOCKED_SLOT_CREATED: "Bloqueo creado",
   BLOCKED_SLOT_DELETED: "Bloqueo eliminado",
   USER_ROLE_CHANGED: "Cambio de rol",

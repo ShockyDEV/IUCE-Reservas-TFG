@@ -304,6 +304,103 @@ export async function sendReservationCancelledEmail(data: ReservationEmailData) 
   });
 }
 
+/**
+ * Email enviado al usuario cuando un administrador anula (rechaza con
+ * posterioridad) una reserva que ya estaba APROBADA. El estado final en
+ * BD es REJECTED para que en la vista del usuario aparezca como
+ * «Rechazada», pero el copy es específico porque la reserva sí llegó a
+ * estar viva y queremos comunicar claramente que se ha retirado.
+ */
+export async function sendReservationAnulledByAdminEmail(
+  data: ReservationEmailData,
+) {
+  const reasonBlock = data.adminNotes
+    ? `
+      <div style="background-color:#FEF3F2;border-left:3px solid #D92D20;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;">
+        <p style="margin:0 0 4px;color:#B42318;font-size:12px;font-weight:600;">
+          Motivo indicado por administración:
+        </p>
+        <p style="margin:0;color:#374151;font-size:13px;">${data.adminNotes}</p>
+      </div>
+    `
+    : "";
+
+  const content = `
+    <h2 style="margin:0 0 8px;color:#111827;font-size:18px;">Tu reserva ha sido anulada</h2>
+    <p style="margin:0 0 16px;color:#6b7280;font-size:14px;line-height:1.6;">
+      Hola ${data.userName}, te informamos de que la administración del IUCE ha anulado una de tus reservas previamente aprobadas. Si crees que se trata de un error, ponte en contacto con el equipo del IUCE.
+    </p>
+    <div style="display:inline-block;background-color:#FEF3F2;color:#B42318;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;margin-bottom:8px;">
+      Estado: RECHAZADA
+    </div>
+    ${reservationDetailsBlock(data)}
+    ${reasonBlock}
+    ${buttonBlock("Ver mis reservas", `${APP_URL}/dashboard`, "#1B3A5C")}
+  `;
+
+  return sendEmail({
+    to: data.userEmail,
+    subject: `Reserva anulada por administración: ${data.title}`,
+    html: baseTemplate(
+      content,
+      `Administración ha anulado tu reserva para ${data.spaceName}.`,
+    ),
+  });
+}
+
+/**
+ * Email enviado al usuario cuando un administrador modifica una reserva
+ * existente. Se muestran tanto los datos anteriores como los nuevos para
+ * que el solicitante pueda comparar de un vistazo qué cambió.
+ */
+export async function sendReservationModifiedEmail(
+  data: ReservationEmailData,
+  previous: { date: string; timeRange: string; title: string },
+) {
+  const changesBlock = `
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;">
+      <tr><td style="padding:2px 0;"><strong style="color:#92400E;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Cambios aplicados</strong></td></tr>
+      <tr><td style="padding:6px 0 2px;font-size:12px;color:#6b7280;">Título anterior</td></tr>
+      <tr><td style="padding:0 0 6px;font-size:13px;color:#374151;text-decoration:line-through;">${previous.title}</td></tr>
+      <tr><td style="padding:6px 0 2px;font-size:12px;color:#6b7280;">Fecha y hora anteriores</td></tr>
+      <tr><td style="padding:0 0 6px;font-size:13px;color:#374151;text-decoration:line-through;">${previous.date} · ${previous.timeRange}</td></tr>
+    </table>
+  `;
+  const notesBlock = data.adminNotes
+    ? `
+      <div style="background-color:#EFF8FF;border-left:3px solid #3B7DD8;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;">
+        <p style="margin:0 0 4px;color:#1B3A5C;font-size:12px;font-weight:600;">
+          Notas del administrador:
+        </p>
+        <p style="margin:0;color:#374151;font-size:13px;">${data.adminNotes}</p>
+      </div>
+    `
+    : "";
+
+  const content = `
+    <h2 style="margin:0 0 8px;color:#111827;font-size:18px;">Tu reserva ha sido modificada</h2>
+    <p style="margin:0 0 16px;color:#6b7280;font-size:14px;line-height:1.6;">
+      Hola ${data.userName}, la administración del IUCE ha actualizado los detalles de una de tus reservas. A continuación tienes los nuevos datos y un resumen de lo que ha cambiado.
+    </p>
+    <div style="display:inline-block;background-color:#FFFBEB;color:#92400E;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;margin-bottom:8px;">
+      Reserva actualizada
+    </div>
+    ${reservationDetailsBlock(data)}
+    ${changesBlock}
+    ${notesBlock}
+    ${buttonBlock("Ver mis reservas", `${APP_URL}/dashboard`, "#1B3A5C")}
+  `;
+
+  return sendEmail({
+    to: data.userEmail,
+    subject: `Reserva actualizada: ${data.title}`,
+    html: baseTemplate(
+      content,
+      `Tu reserva para ${data.spaceName} ha sido actualizada por administración.`,
+    ),
+  });
+}
+
 // ============================================
 // Helper para construir los datos del email a partir de una reserva
 // ============================================

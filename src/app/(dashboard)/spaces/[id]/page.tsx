@@ -2,13 +2,14 @@ import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Accessibility, Users, MapPin, Building, ArrowLeft, CalendarPlus } from "lucide-react";
+import { Accessibility, Users, MapPin, Building, ArrowLeft, CalendarPlus, CalendarSearch } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getSpaceImage } from "@/lib/space-images";
 import { parseEquipment } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SpaceAvailabilityCalendar } from "@/components/calendar/space-availability-calendar";
 
 export const metadata = { title: "Detalle del espacio" };
 
@@ -140,7 +141,20 @@ export default async function SpaceDetailPage({
             </div>
           )}
 
-          <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-gray-100 pt-6">
+          <div className="mt-10 border-t border-gray-100 pt-6">
+            <div className="flex items-center gap-2 mb-3">
+              <CalendarSearch className="h-4 w-4 text-iuce-blue" />
+              <h2 className="text-sm font-semibold text-gray-700">
+                Disponibilidad
+              </h2>
+              <span className="text-xs text-gray-500">
+                Días libres y reservas existentes en este espacio
+              </span>
+            </div>
+            <SpaceAvailabilityCalendar spaceId={space.id} mode="view" />
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-gray-100 pt-6">
             <Link href={`/spaces/${space.id}/reserve`}>
               <Button size="lg">
                 <CalendarPlus className="h-4 w-4 mr-1.5" />

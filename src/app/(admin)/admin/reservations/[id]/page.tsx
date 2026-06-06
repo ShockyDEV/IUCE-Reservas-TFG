@@ -9,10 +9,13 @@ import {
   Building2,
   MessageSquare,
   User as UserIcon,
+  Pencil,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ReviewActions } from "../review-actions";
+import { AdminAnulButton } from "../admin-anul-button";
 import { RESERVATION_STATUS_BADGE } from "@/lib/format";
 
 const dateFmt = new Intl.DateTimeFormat("es-ES", {
@@ -59,6 +62,12 @@ export default async function AdminReservationDetailPage({
     RESERVATION_STATUS_BADGE[
       reservation.status as keyof typeof RESERVATION_STATUS_BADGE
     ];
+
+  // El admin puede aplicar acciones (editar / cancelar) sólo mientras la
+  // reserva esté en uno de los estados activos. Los terminales no admiten
+  // más cambios desde la UI.
+  const isActiveState =
+    reservation.status === "PENDING" || reservation.status === "APPROVED";
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10 space-y-6">
@@ -191,38 +200,64 @@ export default async function AdminReservationDetailPage({
         </Card>
       </div>
 
-      {(() => {
-        if (reservation.status === "PENDING") {
-          return (
-            <Card className="border-warning-500/20 bg-warning-50/20">
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-warning-500" />
-                  Acción del administrador
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ReviewActions reservationId={reservation.id} />
-              </CardContent>
-            </Card>
-          );
-        }
-        if (reservation.adminNotes) {
-          return (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Notas del administrador</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap">
-                  {reservation.adminNotes}
-                </p>
-              </CardContent>
-            </Card>
-          );
-        }
-        return null;
-      })()}
+      {reservation.status === "PENDING" && (
+        <Card className="border-warning-500/20 bg-warning-50/20">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-warning-500" />
+              Decisión sobre la solicitud
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ReviewActions reservationId={reservation.id} />
+          </CardContent>
+        </Card>
+      )}
+
+      {isActiveState && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Pencil className="h-4 w-4 text-iuce-blue" />
+              Acciones administrativas
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-gray-500">
+              {reservation.status === "APPROVED"
+                ? "Como administrador, puedes modificar los datos de la reserva o anularla. Al anularla, el solicitante la verá como «Rechazada» y recibirá un email comunicándole la decisión."
+                : "Como administrador, puedes modificar los datos de la reserva antes de revisarla. Para denegarla, usa la opción «Rechazar» del bloque superior."}
+            </p>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Link href={`/admin/reservations/${reservation.id}/edit`}>
+                <Button type="button" size="sm" variant="outline">
+                  <Pencil className="h-3.5 w-3.5 mr-1" />
+                  Modificar reserva
+                </Button>
+              </Link>
+              {reservation.status === "APPROVED" && (
+                <AdminAnulButton
+                  reservationId={reservation.id}
+                  title={reservation.title}
+                />
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {!isActiveState && reservation.adminNotes && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Notas del administrador</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 whitespace-pre-wrap">
+              {reservation.adminNotes}
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
