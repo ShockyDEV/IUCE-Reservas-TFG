@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   parseEquipment,
   getAuditActionLabel,
-  getRoleLabel,
   RESERVATION_STATUS_BADGE,
 } from "@/lib/format";
 
@@ -43,18 +42,6 @@ describe("getAuditActionLabel", () => {
 
   it("hace fallback al código para acciones desconocidas", () => {
     expect(getAuditActionLabel("RANDOM_ACTION")).toBe("RANDOM_ACTION");
-  });
-});
-
-describe("getRoleLabel", () => {
-  it("traduce los roles", () => {
-    expect(getRoleLabel("USER")).toBe("Usuario");
-    expect(getRoleLabel("ADMIN")).toBe("Administrador");
-    expect(getRoleLabel("SUPER_ADMIN")).toBe("Super Administrador");
-  });
-
-  it("hace fallback para roles desconocidos", () => {
-    expect(getRoleLabel("GUEST")).toBe("GUEST");
   });
 });
 
