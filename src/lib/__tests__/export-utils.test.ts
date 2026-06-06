@@ -23,11 +23,15 @@ describe("escapeCsvField", () => {
     expect(escapeCsvField(true)).toBe("true");
   });
 
-  it("entrecomilla valores con coma, comillas o saltos de línea", () => {
-    expect(escapeCsvField("uno, dos")).toBe('"uno, dos"');
+  it("entrecomilla valores con punto y coma, comillas o saltos de línea", () => {
+    expect(escapeCsvField("uno; dos")).toBe('"uno; dos"');
     expect(escapeCsvField('di "hola"')).toBe('"di ""hola"""');
     expect(escapeCsvField("primera\nsegunda")).toBe('"primera\nsegunda"');
     expect(escapeCsvField("con\r\nCRLF")).toBe('"con\r\nCRLF"');
+  });
+
+  it("no entrecomilla cuando solo hay coma (la coma no es separador)", () => {
+    expect(escapeCsvField("uno, dos")).toBe("uno, dos");
   });
 
   it("convierte objetos no nulos a su representación de string", () => {
@@ -37,33 +41,34 @@ describe("escapeCsvField", () => {
 });
 
 describe("buildCsv", () => {
-  it("genera CSV con BOM UTF-8, hint sep= para Excel y separadores CRLF", () => {
+  it("genera CSV con BOM UTF-8, separador ; y CRLF", () => {
     const csv = buildCsv(["a", "b"], [
       [1, 2],
       [3, 4],
     ]);
     expect(csv.startsWith("﻿")).toBe(true);
-    expect(csv).toBe("﻿sep=,\r\na,b\r\n1,2\r\n3,4");
+    expect(csv).toBe("﻿a;b\r\n1;2\r\n3;4");
   });
 
   it("acepta filas vacías", () => {
     const csv = buildCsv(["x"], []);
-    expect(csv).toBe("﻿sep=,\r\nx");
+    expect(csv).toBe("﻿x");
   });
 
   it("escapa los valores especiales en cabecera y filas", () => {
-    const csv = buildCsv(['col,uno', "col2"], [
+    const csv = buildCsv(["col;uno", "col2"], [
       ['valor con "comillas"', "ok"],
     ]);
     expect(csv).toBe(
-      '﻿sep=,\r\n"col,uno",col2\r\n"valor con ""comillas""",ok',
+      '﻿"col;uno";col2\r\n"valor con ""comillas""";ok',
     );
   });
 
-  it("incluye la directiva sep= justo después del BOM para Excel-ES", () => {
-    const csv = buildCsv(["a"], [["v"]]);
-    // El BOM ocupa el primer carácter; sep= debe ir inmediatamente después.
-    expect(csv.slice(1, 7)).toBe("sep=,\r");
+  it("no rompe los acentos: el BOM es el primer byte y no hay directiva sep=", () => {
+    const csv = buildCsv(["Acción"], [["Reunión"]]);
+    // El segundo carácter debe ser ya el contenido, no `sep=`.
+    expect(csv.charCodeAt(0)).toBe(0xfeff);
+    expect(csv.slice(1, 7)).toBe("Acción");
   });
 });
 
