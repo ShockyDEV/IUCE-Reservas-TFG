@@ -285,8 +285,14 @@ export async function POST(req: NextRequest) {
     const emailData = buildReservationEmailData(reservation);
     await sendReservationCreatedEmail(emailData);
 
+    // Solo notificamos a los administradores que tengan activado
+    // el flag receiveAdminEmails (por defecto true). Esto permite que
+    // un admin se silencie sin perder el rol.
     const admins = await prisma.user.findMany({
-      where: { role: { in: ["ADMIN", "SUPER_ADMIN"] } },
+      where: {
+        role: { in: ["ADMIN", "SUPER_ADMIN"] },
+        receiveAdminEmails: true,
+      },
       select: { email: true },
     });
     if (admins.length > 0) {
