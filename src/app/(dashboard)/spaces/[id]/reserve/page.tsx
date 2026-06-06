@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { SpaceAvailabilityCalendar } from "@/components/calendar/space-availability-calendar";
 
 interface Space {
   id: string;
@@ -179,6 +180,18 @@ export default function ReservePage({ params }: Readonly<{ params: { id: string 
                 value={form.date}
                 onChange={(e) => setForm({ ...form, date: e.target.value })}
               />
+              <p className="mt-1.5 text-[11px] text-gray-500">
+                Pulsa un día del calendario para seleccionarlo. Verás las
+                franjas ya ocupadas justo debajo.
+              </p>
+              <div className="mt-3">
+                <SpaceAvailabilityCalendar
+                  spaceId={params.id}
+                  mode="interactive"
+                  selectedDate={form.date || undefined}
+                  onDateSelect={(iso) => setForm({ ...form, date: iso })}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

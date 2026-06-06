@@ -12,16 +12,26 @@ const labelFor = (status: string): string =>
   RESERVATION_STATUS_BADGE[status as keyof typeof RESERVATION_STATUS_BADGE]
     ?.label ?? status;
 
+const TAB_STATUSES = [
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+  "CANCELLED",
+  "EXPIRED",
+] as const;
+type TabStatus = (typeof TAB_STATUSES)[number];
+
+function isTabStatus(value: string | undefined): value is TabStatus {
+  return TAB_STATUSES.includes(value as TabStatus);
+}
+
 export default async function AdminReservationsPage({
   searchParams,
 }: Readonly<{
   searchParams: { status?: string };
 }>) {
   const status = searchParams.status?.toUpperCase();
-  const validStatus =
-    status === "PENDING" || status === "APPROVED" || status === "REJECTED"
-      ? status
-      : "PENDING";
+  const validStatus: TabStatus = isTabStatus(status) ? status : "PENDING";
 
   const reservations = await prisma.reservation.findMany({
     where: { status: validStatus },
@@ -61,7 +71,8 @@ export default async function AdminReservationsPage({
             Gestión de solicitudes de reserva
           </h1>
           <p className="mt-2 text-sm text-gray-500">
-            Aprueba o rechaza las solicitudes pendientes del IUCE.
+            Aprueba o rechaza solicitudes pendientes y consulta el resto de
+            estados (aprobadas, rechazadas, canceladas, expiradas).
           </p>
         </div>
         <a
@@ -74,7 +85,7 @@ export default async function AdminReservationsPage({
       </div>
 
       <nav className="mt-6 flex flex-wrap gap-2">
-        {(["PENDING", "APPROVED", "REJECTED"] as const).map((s) => {
+        {TAB_STATUSES.map((s) => {
           const isActive = validStatus === s;
           return (
             <a

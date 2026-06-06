@@ -49,7 +49,7 @@ export function CancelButton({ reservationId, title }: Readonly<CancelButtonProp
       className="text-gray-600 hover:text-danger-700 hover:border-danger-300"
     >
       <X className="h-3.5 w-3.5 mr-1" />
-      Cancelar
+      Cancelar reserva
     </Button>
   );
 }
