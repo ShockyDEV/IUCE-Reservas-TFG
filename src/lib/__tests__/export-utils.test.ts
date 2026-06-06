@@ -37,25 +37,33 @@ describe("escapeCsvField", () => {
 });
 
 describe("buildCsv", () => {
-  it("genera CSV con BOM UTF-8 y separadores CRLF", () => {
+  it("genera CSV con BOM UTF-8, hint sep= para Excel y separadores CRLF", () => {
     const csv = buildCsv(["a", "b"], [
       [1, 2],
       [3, 4],
     ]);
     expect(csv.startsWith("﻿")).toBe(true);
-    expect(csv).toBe("﻿a,b\r\n1,2\r\n3,4");
+    expect(csv).toBe("﻿sep=,\r\na,b\r\n1,2\r\n3,4");
   });
 
   it("acepta filas vacías", () => {
     const csv = buildCsv(["x"], []);
-    expect(csv).toBe("﻿x");
+    expect(csv).toBe("﻿sep=,\r\nx");
   });
 
   it("escapa los valores especiales en cabecera y filas", () => {
     const csv = buildCsv(['col,uno', "col2"], [
       ['valor con "comillas"', "ok"],
     ]);
-    expect(csv).toBe('﻿"col,uno",col2\r\n"valor con ""comillas""",ok');
+    expect(csv).toBe(
+      '﻿sep=,\r\n"col,uno",col2\r\n"valor con ""comillas""",ok',
+    );
+  });
+
+  it("incluye la directiva sep= justo después del BOM para Excel-ES", () => {
+    const csv = buildCsv(["a"], [["v"]]);
+    // El BOM ocupa el primer carácter; sep= debe ir inmediatamente después.
+    expect(csv.slice(1, 7)).toBe("sep=,\r");
   });
 });
 

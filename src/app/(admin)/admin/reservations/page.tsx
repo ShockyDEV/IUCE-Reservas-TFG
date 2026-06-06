@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { buttonClassName } from "@/components/ui/button";
 import { RESERVATION_STATUS_BADGE } from "@/lib/format";
 import { ReviewActions } from "./review-actions";
+import { CalendarExport } from "./calendar-export";
 
 /** Resuelve la etiqueta legible de un estado, con fallback al codigo crudo. */
 const labelFor = (status: string): string =>
@@ -83,6 +84,8 @@ export default async function AdminReservationsPage({
           Exportar CSV
         </a>
       </div>
+
+      <CalendarExport />
 
       <nav className="mt-6 flex flex-wrap gap-2">
         {TAB_STATUSES.map((s) => {
