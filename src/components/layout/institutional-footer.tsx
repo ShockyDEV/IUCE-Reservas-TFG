@@ -76,7 +76,7 @@ export function InstitutionalFooter() {
 
         <div className="mt-10 flex flex-col items-center justify-between gap-2 border-t border-gray-100 pt-6 text-xs text-gray-400 sm:flex-row">
           <p>© {new Date().getFullYear()} IUCE — Universidad de Salamanca</p>
-          <p>Proyecto académico · TFG · UBU 2025-26</p>
+          <p>Plataforma institucional de reservas de espacios</p>
         </div>
       </div>
     </footer>

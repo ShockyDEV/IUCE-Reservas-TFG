@@ -22,16 +22,20 @@ enum ReservationStatus {
 }
 
 model User {
-  id               String    @id @default(cuid())
-  email            String    @unique
-  name             String
-  role             UserRole  @default(USER)
-  image            String?
-  profileCompleted Boolean   @default(false)
-  isBanned         Boolean   @default(false)
-  banReason        String?
-  createdAt        DateTime  @default(now())
-  lastLogin        DateTime?
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  name                String
+  role                UserRole  @default(USER)
+  image               String?
+  profileCompleted    Boolean   @default(false)
+  isBanned            Boolean   @default(false)
+  banReason           String?
+  // Solo afecta a administradores: si está en false, este admin no recibe
+  // los correos de notificación cuando se crea una nueva solicitud. Por
+  // defecto está en true para mantener el comportamiento anterior.
+  receiveAdminEmails  Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  lastLogin           DateTime?
 
   accounts     Account[]
   sessions     Session[]
