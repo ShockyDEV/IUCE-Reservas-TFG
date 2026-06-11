@@ -264,7 +264,11 @@ El proyecto se organiza en 10 sprints (14 abril – 5 junio 2026) y 12 épicas (
 La calidad del código se verifica de forma continua: 130 tests unitarios con Vitest, análisis estático en SonarCloud con calificación A en seguridad, fiabilidad y mantenibilidad, y un pipeline de integración continua en GitHub Actions que ejecuta el linter, la comprobación de tipos y la suite completa de pruebas en cada cambio, además del build de producción en la rama principal.
 
 <p align="center">
-  <img src="docs/img/calidad-testing.png" alt="Calidad verificada: 130 tests con Vitest, calificación A en SonarCloud y CI" width="820" />
+  <img src="docs/img/release-v1.0.0/34-tests-passing.png" alt="Suite de Vitest con los 130 tests en verde" width="760" />
+</p>
+
+<p align="center">
+  <img src="docs/img/release-v1.0.0/33-sonarcloud-quality-gate.png" alt="Quality Gate de SonarCloud superado en la release v1.0.0" width="760" />
 </p>
 
 Las issues señaladas por SonarCloud crecieron al ritmo del desarrollo hasta las 103 y una pasada de calidad previa a la release final las redujo a cero, con la suite de tests como red de seguridad durante la limpieza.
