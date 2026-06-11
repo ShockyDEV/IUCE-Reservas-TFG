@@ -23,7 +23,7 @@
   <img src="https://img.shields.io/badge/Next.js-14-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 14" />
   <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 5" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL 16" />
-  <img src="https://img.shields.io/badge/deployment-active-success?style=flat-square&logo=vercel&logoColor=white" alt="Deployed" />
+  <img src="https://img.shields.io/badge/despliegue-activo-success?style=flat-square&logo=docker&logoColor=white" alt="Despliegue activo" />
   <a href="https://sonarcloud.io/summary/new_code?id=ShockyDEV_IUCE-Reservas-TFG">
     <img src="https://sonarcloud.io/api/project_badges/measure?project=ShockyDEV_IUCE-Reservas-TFG&metric=alert_status" alt="Quality Gate Status" />
   </a>
@@ -32,7 +32,7 @@
 <!-- SKILLICONS -->
 <p align="center">
   <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=nextjs,ts,react,prisma,postgres,tailwind,docker,nginx" alt="Stack" />
+    <img src="https://skillicons.dev/icons?i=nextjs,ts,react,prisma,postgres,tailwind,docker" alt="Stack" />
   </a>
 </p>
 
@@ -45,7 +45,7 @@
 - [Puesta en marcha](#puesta-en-marcha)
 - [Scripts disponibles](#scripts-disponibles)
 - [Estructura del proyecto](#estructura-del-proyecto)
-- [Análisis y diseño](#análisis-y-diseño)
+- [Documentación](#documentación)
 - [Roadmap por sprints](#roadmap-por-sprints)
 - [Releases](#releases)
 - [Licencia](#licencia)
@@ -145,6 +145,7 @@ npm run build && npm run start
 | `npm run build` | Genera el build de producción. |
 | `npm run start` | Arranca el build de producción. |
 | `npm run lint` | Ejecuta el linter. |
+| `npm run test` | Ejecuta la suite de tests con Vitest. |
 | `npm run db:push` | Aplica el esquema Prisma a la base de datos. |
 | `npm run db:seed` | Inserta los datos iniciales (espacios). |
 | `npm run db:generate` | Regenera el cliente de Prisma. |
@@ -156,7 +157,7 @@ npm run build && npm run start
 ```
 .
 ├── prisma/
-│   ├── schema.prisma       # Modelos de datos
+│   ├── schema.prisma       # 9 modelos de datos
 │   └── seed.ts             # Datos iniciales (4 espacios del IUCE)
 ├── public/
 │   └── images/
@@ -164,94 +165,39 @@ npm run build && npm run start
 │       └── spaces/         # Imágenes de cada espacio
 ├── src/
 │   ├── app/
-│   │   ├── api/
-│   │   │   ├── auth/       # Magic link y NextAuth
-│   │   │   └── spaces/     # API REST del catálogo
-│   │   ├── auth/           # Páginas de sign-in y callback
-│   │   ├── (dashboard)/
-│   │   │   ├── dashboard/  # Panel del usuario
-│   │   │   └── spaces/     # Catálogo público
+│   │   ├── api/            # 26 endpoints REST (route handlers)
+│   │   │   ├── auth/          # Magic link y NextAuth
+│   │   │   ├── spaces/        # Catálogo, disponibilidad y ocupación
+│   │   │   ├── reservations/  # Motor de reservas
+│   │   │   ├── notifications/ # Notificaciones in-app
+│   │   │   ├── admin/         # Gestión, informes y exportaciones
+│   │   │   ├── cron/          # Tareas programadas (recordatorios)
+│   │   │   └── health/        # Health check
+│   │   ├── auth/           # Páginas de acceso y callback
+│   │   ├── (dashboard)/    # Panel de usuario y catálogo público
+│   │   ├── (admin)/        # Panel de administración
 │   │   ├── layout.tsx
 │   │   └── page.tsx        # Landing
+│   ├── components/         # Componentes de UI (CVA + Tailwind)
 │   ├── lib/
-│   │   ├── auth.ts         # Configuración NextAuth
-│   │   ├── email.ts        # Envío de correos vía Resend
-│   │   ├── prisma.ts       # Cliente Prisma singleton
-│   │   └── space-images.ts # Mapeo de imágenes por espacio
+│   │   ├── auth.ts            # Configuración de NextAuth
+│   │   ├── email.ts          # Envío de correos vía Resend
+│   │   ├── prisma.ts         # Cliente Prisma singleton
+│   │   ├── reservations.ts   # Lógica y transiciones de estado de reservas
+│   │   ├── usal-directory.ts # Consulta de nombres al directorio USAL
+│   │   ├── rate-limit.ts     # Limitación de peticiones
+│   │   └── validations.ts    # Esquemas de validación (Zod)
 │   └── middleware.ts       # Protección de rutas
-├── docs/
-│   └── img/                # Diagramas de diseño
-├── docker-compose.yml      # Postgres local
+├── docs/                   # Capturas e imágenes de las releases
+├── docker-compose.yml      # PostgreSQL en local
 └── .env.example
 ```
 
 ---
 
-## Análisis y diseño
+## Documentación
 
-Antes de iniciar el ciclo iterativo de Scrum se elaboró toda la documentación de análisis y diseño del sistema. Estos artefactos guían la implementación incremental que se realiza sprint a sprint. Se agrupan en la épica **EPIC-00 Análisis y Diseño** del Product Backlog.
-
-### Arquitectura del sistema
-
-Visión general de las capas del sistema (frontend, API, base de datos y servicios externos) y sus interacciones.
-
-<p align="center">
-  <img src="docs/img/arquitectura.png" alt="Diagrama de arquitectura del sistema" width="780" />
-</p>
-
-### Modelo de datos
-
-Diagrama entidad-relación con todas las entidades del dominio y sus relaciones. Cada entidad se implementa en el sprint que cubre su área funcional.
-
-<p align="center">
-  <img src="docs/img/diagrama-entidad.png" alt="Diagrama de entidad-relación del sistema" width="640" />
-</p>
-
-| Entidad | Responsabilidad | Sprint de implementación |
-|---------|-----------------|--------------------------|
-| `User` | Usuarios autenticados de la plataforma. | Sprint 1 |
-| `Account` / `Session` / `VerificationToken` | Modelos requeridos por NextAuth. | Sprint 1 |
-| `Space` | Espacios reservables del IUCE. | Sprint 2 |
-| `Reservation` | Reservas de los usuarios sobre los espacios. | Sprint 3 |
-| `BlockedSlot` | Bloqueos administrativos de franjas horarias. | Sprint 5 |
-| `Notification` | Notificaciones internas mostradas al usuario. | Sprint 4 |
-| `AuditLog` | Registro de acciones críticas. | Sprint 6 |
-
-### Máquina de estados de una reserva
-
-Estados por los que pasa una reserva durante su ciclo de vida y transiciones permitidas. Cada cambio de estado dispara un efecto secundario (envío de email correspondiente).
-
-<p align="center">
-  <img src="docs/img/maquina-estados-reserva.png" alt="Máquina de estados de una reserva" width="560" />
-</p>
-
-### Flujo de procesos por rol
-
-Funcionalidades disponibles para cada perfil de usuario (visitante, USER, ADMIN, SUPER_ADMIN) y los flujos principales que ejecutan.
-
-<p align="center">
-  <img src="docs/img/diagrama-procesos.png" alt="Flujo de procesos del sistema por rol" width="780" />
-</p>
-
-### Diagramas de secuencia
-
-<details>
-<summary>Login con magic link y creación de reserva</summary>
-
-<p align="center">
-  <img src="docs/img/secuencia-login-reserva.png" alt="Secuencia: login y creación de reserva" width="640" />
-</p>
-
-</details>
-
-<details>
-<summary>Flujo de aprobación administrativa</summary>
-
-<p align="center">
-  <img src="docs/img/secuencia-aprobacion.png" alt="Secuencia: aprobación administrativa" width="640" />
-</p>
-
-</details>
+La documentación completa del proyecto —memoria, plan de proyecto, especificación de requisitos, diseño del sistema (modelo de datos, máquina de estados, arquitectura y diagramas de secuencia) y los **manuales de usuario y de administrador**— forma parte de los **anexos del Trabajo de Fin de Grado**.
 
 ---
 
@@ -299,7 +245,7 @@ Cada cierre de hito relevante del proyecto se publica como una **release** versi
 
 | Versión | Estado | Fecha | Contenido principal |
 |---------|--------|-------|---------------------|
-| [`v1.0.0`](https://github.com/ShockyDEV/IUCE-Reservas-TFG/releases/tag/v1.0.0) | Stable | 5 junio 2026 | **Release final**. Cierre de Sprints 8-9: notificaciones in-app, cancelación de reservas, EXPIRED + cron, perfil editable, normas, ban de usuarios, sincronización LDAP USAL, exportación CSV, filtros catálogo, Mis Reservas, /admin/reports, CRUD espacios. Pipeline CI con GitHub Actions, health check, rate limit y guía de despliegue en CPD-USAL. **118 tests** verdes. |
+| [`v1.0.0`](https://github.com/ShockyDEV/IUCE-Reservas-TFG/releases/tag/v1.0.0) | Stable | 5 junio 2026 | **Release final**. Cierre de Sprints 8-9: notificaciones in-app, cancelación de reservas, EXPIRED + cron, perfil editable, normas, ban de usuarios, sincronización de nombres con el directorio USAL, exportación CSV, filtros de catálogo, Mis Reservas, informes de administración y CRUD de espacios. Pipeline CI con GitHub Actions, health check, rate limit y guía de despliegue en CPD-USAL. **130 tests** verdes. |
 | [`v0.2.0`](https://github.com/ShockyDEV/IUCE-Reservas-TFG/releases/tag/v0.2.0) | Pre-release | 26 mayo 2026 | Cierre de Sprints 5-7: bloqueos administrativos, reservas recurrentes, panel admin completo con audit log, refinado UX y mobile, suite de tests con Vitest y SonarCloud Quality Gate **Passed**. |
 | [`v0.1.0`](https://github.com/ShockyDEV/IUCE-Reservas-TFG/releases/tag/v0.1.0) | Pre-release | 11 mayo 2026 | Cierre de Sprints 1-4: autenticación con magic link, catálogo de espacios, motor de reservas y flujo de aprobación administrativa con notificaciones por email. |
 
@@ -308,6 +254,8 @@ Cada cierre de hito relevante del proyecto se publica como una **release** versi
 ## Licencia
 
 Distribuido bajo licencia **MIT**. Consulta el archivo [`LICENSE`](LICENSE) para más detalles.
+
+Todas las dependencias del proyecto se distribuyen bajo licencias permisivas (MIT, ISC y Apache 2.0), compatibles con la licencia del proyecto. El análisis de licencias completo se recoge en el estudio de viabilidad legal de los anexos del Trabajo de Fin de Grado.
 
 Esta elección facilita la **transferencia del software** a otros institutos u organismos académicos con necesidades similares de gestión de espacios.
 
