@@ -170,6 +170,7 @@ npm run build && npm run start
 │   │   │   ├── spaces/        # Catálogo, disponibilidad y ocupación
 │   │   │   ├── reservations/  # Motor de reservas
 │   │   │   ├── notifications/ # Notificaciones in-app
+│   │   │   ├── users/         # Perfil del usuario
 │   │   │   ├── admin/         # Gestión, informes y exportaciones
 │   │   │   ├── cron/          # Tareas programadas (recordatorios)
 │   │   │   └── health/        # Health check
@@ -187,8 +188,10 @@ npm run build && npm run start
 │   │   ├── usal-directory.ts # Consulta de nombres al directorio USAL
 │   │   ├── rate-limit.ts     # Limitación de peticiones
 │   │   └── validations.ts    # Esquemas de validación (Zod)
-│   └── middleware.ts       # Protección de rutas
-├── docs/                   # Capturas e imágenes de las releases
+│   └── middleware.ts       # Middleware de Next.js
+├── docs/
+│   ├── manuales/           # Memoria y anexos del TFG en PDF
+│   └── img/                # Capturas e imágenes de las releases
 ├── docker-compose.yml      # PostgreSQL en local
 └── .env.example
 ```
@@ -197,7 +200,18 @@ npm run build && npm run start
 
 ## Documentación
 
-La documentación completa del proyecto —memoria, plan de proyecto, especificación de requisitos, diseño del sistema (modelo de datos, máquina de estados, arquitectura y diagramas de secuencia) y los **manuales de usuario y de administrador**— forma parte de los **anexos del Trabajo de Fin de Grado**.
+La documentación completa del proyecto se publica en PDF en la carpeta [`docs/manuales/`](docs/manuales/). La memoria es el documento principal del TFG y los anexos recogen, en seis apéndices, el plan de proyecto, la especificación de requisitos, el diseño del sistema, la documentación técnica, los manuales de usuario y de administrador y el anexo de sostenibilización curricular.
+
+| Documento | Contenido |
+|-----------|-----------|
+| [Memoria](docs/manuales/Memoria.pdf) | Objetivos, conceptos teóricos, metodología, aspectos relevantes del desarrollo y conclusiones. |
+| [Anexos (documento completo)](docs/manuales/Anexos.pdf) | Los seis apéndices reunidos en un único PDF. |
+| [Apéndice A. Plan de Proyecto Software](docs/manuales/Anexo_A_Plan_de_Proyecto.pdf) | Alcance, planificación por sprints, estudio de viabilidad económica y legal, y gestión de riesgos. |
+| [Apéndice B. Especificación de Requisitos](docs/manuales/Anexo_B_Especificacion_de_Requisitos.pdf) | Requisitos funcionales y no funcionales, casos de uso y trazabilidad. |
+| [Apéndice C. Especificación de Diseño](docs/manuales/Anexo_C_Especificacion_de_Diseno.pdf) | Arquitectura, modelo de datos, máquina de estados, diagramas de secuencia y despliegue. |
+| [Apéndice D. Documentación Técnica de Programación](docs/manuales/Anexo_D_Documentacion_Tecnica.pdf) | Manual del programador: estructura del proyecto, API REST, sistema de email y pruebas. |
+| [Apéndice E. Documentación de Usuario](docs/manuales/Anexo_E_Documentacion_de_Usuario.pdf) | Instalación en local, guía del usuario y guía del administrador. |
+| [Apéndice F. Sostenibilización Curricular](docs/manuales/Anexo_F_Sostenibilizacion_Curricular.pdf) | Contribución del proyecto a los Objetivos de Desarrollo Sostenible. |
 
 ---
 
