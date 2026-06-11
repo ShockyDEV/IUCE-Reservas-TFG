@@ -55,9 +55,11 @@
 
 ## Sobre el proyecto
 
-**IUCE Reservas** es un sistema web para la gestión de reservas de espacios académicos (aulas, laboratorios y salas de uso múltiple) del **Instituto Universitario de Ciencias de la Educación (IUCE)** de la Universidad de Salamanca.
+El [Instituto Universitario de Ciencias de la Educación (IUCE)](https://iuce.usal.es) es un centro propio de la **Universidad de Salamanca** dedicado a la investigación, la formación y la innovación en el ámbito de las ciencias de la educación. Para soportar su actividad (grupos de investigación, programas de doctorado, seminarios y actividades abiertas a profesionales del ámbito educativo), el instituto dispone de aulas docentes, laboratorios y salas de usos múltiples que se utilizan de forma intensiva y compartida a lo largo del curso académico.
 
-El proyecto sustituye el flujo manual previo basado en correos electrónicos y hojas de cálculo por una plataforma digital con autenticación institucional, flujo de aprobación administrativa y notificaciones por correo.
+La reserva de estos espacios seguía un procedimiento manual: solicitudes por correo electrónico y comprobación de la disponibilidad en una hoja de cálculo compartida. Con el crecimiento del volumen de reservas, ese flujo se convirtió en un cuello de botella, con respuestas con días de retraso, solapamientos por errores de transcripción, ausencia de notificaciones automáticas y una sobrecarga administrativa creciente.
+
+**IUCE Reservas** digitaliza por completo ese proceso: catálogo de espacios, formulario de solicitud con validación automática de solapamientos, panel de aprobación administrativa, notificaciones por correo en cada cambio de estado y visualización en calendario de las reservas.
 
 Este repositorio acompaña al **Trabajo de Fin de Grado** del Grado en Ingeniería Informática de la **Universidad de Burgos** (curso 2025-26). El sistema se desarrolla aplicando metodología **Scrum** con sprints cortos y entrega continua.
 
