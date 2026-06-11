@@ -6,7 +6,7 @@
 <!-- TYPING TITLE -->
 <p align="center">
   <a href="https://github.com/ShockyDEV/IUCE-Reservas-TFG">
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=2800&pause=900&color=5B9BE6&center=true&vCenter=true&height=40&width=620&lines=Trabajo+de+Fin+de+Grado+UBU+2025-26;Next.js+14+%2B+Prisma+%2B+PostgreSQL;Scrum+con+10+sprints+y+11+%C3%A9picas;En+producci%C3%B3n+en+reservas.iuce.usal.es" alt="Typing tagline" />
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=2800&pause=900&color=5B9BE6&center=true&vCenter=true&height=40&width=620&lines=Trabajo+de+Fin+de+Grado+UBU+2025-26;Next.js+14+%2B+Prisma+%2B+PostgreSQL;Scrum+con+10+sprints+y+12+%C3%A9picas;En+producci%C3%B3n+en+reservas.iuce.usal.es" alt="Typing tagline" />
   </a>
 </p>
 
@@ -47,6 +47,7 @@
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Documentación](#documentación)
 - [Roadmap por sprints](#roadmap-por-sprints)
+- [Calidad y testing](#calidad-y-testing)
 - [Releases](#releases)
 - [Licencia](#licencia)
 - [Autor](#autor)
@@ -219,7 +220,11 @@ La documentación completa del proyecto se publica en PDF en la carpeta [`docs/m
 
 ## Roadmap por sprints
 
-El proyecto se organiza en 10 sprints (14 abril – 5 junio 2026) y 11 épicas (una previa de análisis y 10 temáticas de implementación). La gestión del Product Backlog se realiza en [Zube.io](https://zube.io) con integración bidireccional con GitHub Issues.
+El proyecto se organiza en 10 sprints (14 abril – 5 junio 2026) y 12 épicas (una previa de análisis, diez de implementación y una de releases y distribución). La gestión del Product Backlog se realiza en [Zube.io](https://zube.io) con integración bidireccional con GitHub Issues.
+
+<p align="center">
+  <img src="docs/img/cronograma-sprints.png" alt="Cronograma de sprints del proyecto" width="820" />
+</p>
 
 - [x] **Sprint 0** · Setup & Planificación *(14-20 abr)*
 - [x] **Sprint 1** · Auth y Modelos base *(21-24 abr)*
@@ -247,9 +252,28 @@ El proyecto se organiza en 10 sprints (14 abril – 5 junio 2026) y 11 épicas (
 | EPIC-07 | Panel de Administración |
 | EPIC-08 | UX y Diseño |
 | EPIC-09 | Calidad y Testing |
-| EPIC-10 | DevOps y Despliegue |
+| EPIC-10 | Despliegue |
+| EPIC-11 | Releases y Distribución |
 
 </details>
+
+---
+
+## Calidad y testing
+
+La calidad del código se verifica de forma continua: 130 tests unitarios con Vitest, análisis estático en SonarCloud con calificación A en seguridad, fiabilidad y mantenibilidad, y un pipeline de integración continua en GitHub Actions que ejecuta el linter, la comprobación de tipos y la suite completa de pruebas en cada cambio, además del build de producción en la rama principal.
+
+<p align="center">
+  <img src="docs/img/calidad-testing.png" alt="Calidad verificada: 130 tests con Vitest, calificación A en SonarCloud y CI" width="820" />
+</p>
+
+Las issues señaladas por SonarCloud crecieron al ritmo del desarrollo hasta las 103 y una pasada de calidad previa a la release final las redujo a cero, con la suite de tests como red de seguridad durante la limpieza.
+
+<p align="center">
+  <img src="docs/img/evolucion-issues-sonarcloud.png" alt="Evolución de las issues en SonarCloud a lo largo del desarrollo" width="820" />
+</p>
+
+> Proyecto en SonarCloud: [sonarcloud.io/project/overview?id=ShockyDEV_IUCE-Reservas-TFG](https://sonarcloud.io/project/overview?id=ShockyDEV_IUCE-Reservas-TFG)
 
 ---
 
