@@ -5,13 +5,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { InstitutionalFooter } from "@/components/layout/institutional-footer";
+import { prisma } from "@/lib/prisma";
+import { getSpaceImage } from "@/lib/space-images";
 
-const HIGHLIGHT_SPACES = [
-  { name: "Aula 17A", code: "IUCE-17A", capacity: 40, img: "/images/spaces/aula-17a.jpg" },
-  { name: "Aula 12A", code: "IUCE-12A", capacity: 25, img: "/images/spaces/aula-12a.jpg" },
-  { name: "Laboratorio", code: "IUCE-LAB", capacity: 20, img: "/images/spaces/laboratorio.jpg" },
-  { name: "Sala de Usos Múltiples", code: "IUCE-SUM", capacity: 60, img: "/images/spaces/sala-usos-multiples.jpg" },
-];
+// Los espacios salen de la base de datos en cada visita: lo que se cambia en
+// Admin → Espacios (capacidad, nombre, imagen, activo) se ve aquí sin recompilar.
+export const dynamic = "force-dynamic";
+
+/** Si la BD no responde, la portada se muestra igual, sin las tarjetas. */
+async function getHomeSpaces() {
+  try {
+    return await prisma.space.findMany({
+      where: { isActive: true },
+      orderBy: { name: "asc" },
+      select: { name: true, code: true, capacity: true, imageUrl: true },
+    });
+  } catch (error) {
+    console.error("[home] No se pudieron cargar los espacios", error);
+    return [];
+  }
+}
 
 const FEATURES = [
   {
@@ -36,7 +49,9 @@ const FEATURES = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const spaces = await getHomeSpaces();
+
   return (
     <main className="min-h-screen flex flex-col bg-gradient-to-b from-brand-50/50 to-white">
       <header className="border-b border-gray-200 bg-white/90 backdrop-blur">
@@ -88,27 +103,38 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="mt-20 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {HIGHLIGHT_SPACES.map((space) => (
-              <Card key={space.code} className="overflow-hidden">
-                <div className="relative aspect-[4/3] bg-gray-100">
-                  <Image
-                    src={space.img}
-                    alt={space.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                    className="object-cover"
-                  />
-                </div>
-                <CardContent className="p-4 pt-4">
-                  <h3 className="font-semibold text-gray-900">{space.name}</h3>
-                  <p className="mt-1 text-xs text-gray-500">
-                    {space.code} · {space.capacity} personas
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {spaces.length > 0 ? (
+            <div className="mt-20 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {spaces.map((space) => {
+                const imgSrc = space.imageUrl || getSpaceImage(space.name, space.code);
+                return (
+                  <Card key={space.code} className="overflow-hidden">
+                    <div className="relative aspect-[4/3] bg-gray-100">
+                      {imgSrc ? (
+                        <Image
+                          src={imgSrc}
+                          alt={space.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 25vw"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
+                          Sin imagen
+                        </div>
+                      )}
+                    </div>
+                    <CardContent className="p-4 pt-4">
+                      <h3 className="font-semibold text-gray-900">{space.name}</h3>
+                      <p className="mt-1 text-xs text-gray-500">
+                        {space.code} · {space.capacity} personas
+                      </p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : null}
 
           <div className="mt-20 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {FEATURES.map((feature) => {
