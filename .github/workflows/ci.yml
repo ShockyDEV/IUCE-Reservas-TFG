@@ -53,22 +53,23 @@ jobs:
           cache: "npm"
 
       - name: Instalar dependencias
-        run: npm ci
+        # Sin scripts de instalación: el cliente de Prisma se genera en el paso siguiente.
+        run: npm ci --ignore-scripts
 
       - name: Generar cliente Prisma
-        run: npx prisma generate
+        run: ./node_modules/.bin/prisma generate
 
       - name: Aplicar esquema a la base de datos
-        run: npx prisma db push --skip-generate
+        run: ./node_modules/.bin/prisma db push --skip-generate
 
       - name: Ejecutar linter
         run: npm run lint
 
       - name: Verificar tipos TypeScript
-        run: npx tsc --noEmit
+        run: ./node_modules/.bin/tsc --noEmit
 
       - name: Ejecutar suite de tests
-        run: npx vitest run
+        run: ./node_modules/.bin/vitest run
 
   build:
     name: Build de producción
@@ -95,10 +96,11 @@ jobs:
           cache: "npm"
 
       - name: Instalar dependencias
-        run: npm ci
+        # Sin scripts de instalación: el cliente de Prisma se genera en el paso siguiente.
+        run: npm ci --ignore-scripts
 
       - name: Generar cliente Prisma
-        run: npx prisma generate
+        run: ./node_modules/.bin/prisma generate
 
       - name: Compilar Next.js
         run: npm run build
