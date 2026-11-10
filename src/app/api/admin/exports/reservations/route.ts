@@ -14,6 +14,9 @@ export async function GET() {
       reviewedBy: { select: { name: true } },
     },
     orderBy: { startTime: "desc" },
+    // Tope de seguridad: acota memoria (no cargar una tabla ilimitada en RAM
+    // ni construir un string gigante). 50k filas cubren con holgura el uso real.
+    take: 50000,
   });
 
   const csv = reservationsToCsv(reservations);

@@ -95,8 +95,9 @@ npm install
 # 2. Variables de entorno
 cp .env.example .env
 
-# 3. Levantar Postgres en Docker
-docker-compose up -d
+# 3. Levantar Postgres en Docker (solo la BD; el servicio app es el de producción)
+docker volume create iuce-reservas_postgres_data
+docker-compose up -d db
 
 # 4. Aplicar el esquema y poblar la base de datos
 npm run db:push
@@ -195,7 +196,7 @@ npm run build && npm run start
 ├── docs/
 │   ├── manuales/           # Memoria y anexos del TFG en PDF
 │   └── img/                # Capturas e imágenes de las releases
-├── docker-compose.yml      # PostgreSQL en local
+├── docker-compose.yml      # App + PostgreSQL (en local basta el servicio db)
 └── .env.example
 ```
 

@@ -10,6 +10,9 @@ export async function GET() {
   const entries = await prisma.auditLog.findMany({
     include: { user: { select: { name: true, email: true } } },
     orderBy: { createdAt: "desc" },
+    // Tope de seguridad: la tabla de auditoría CRECE sin purga; sin este límite,
+    // exportarla cargaría toda la historia en RAM. 50k entradas más recientes.
+    take: 50000,
   });
 
   const csv = auditLogToCsv(entries);

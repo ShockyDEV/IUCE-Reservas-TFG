@@ -56,3 +56,6 @@ prisma/migrations/dev.db*
 # Logs
 logs
 *.log
+
+# Material de trabajo local (contiene credenciales) — NO subir
+IUCE WEB RESERVAS/

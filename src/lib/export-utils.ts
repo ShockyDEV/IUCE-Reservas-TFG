@@ -56,7 +56,14 @@ export interface ExportAuditEntry {
 /** Escapa un valor individual: comillas dobles si contiene el separador,
  *  comillas dobles o saltos de línea. */
 export function escapeCsvField(value: unknown): string {
-  const str = csvStringify(value);
+  let str = csvStringify(value);
+  // Mitigación de inyección de fórmulas (CSV/Formula Injection, CWE-1236): si el
+  // valor empieza por = + - @ (o tab/CR), Excel/LibreOffice lo ejecutarían como
+  // fórmula. Lo neutralizamos anteponiendo un apóstrofo, que esos programas tratan
+  // como "texto literal". Aplica a campos de usuario (título, nombre, notas...).
+  if (/^[=+\-@\t\r]/.test(str)) {
+    str = "'" + str;
+  }
   const needsQuoting = /[";\r\n]/.test(str);
   if (!needsQuoting) return str;
   return `"${str.replaceAll('"', '""')}"`;

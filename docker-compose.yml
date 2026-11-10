@@ -1,4 +1,15 @@
-version: "3"
+version: "2.4"   # 2.4 soporta mem_limit con docker-compose (3.x lo ignora fuera de swarm)
+
+# IUCE Reservas v1.0.x — App + BD, todo en Docker.
+# La app sale en :3000 y Apache (host) hace de reverse-proxy HTTPS hacia localhost:3000.
+#
+# IMPORTANTE — datos: el volumen de Postgres es EXTERNO y apunta al volumen
+# existente (iuce-reservas_postgres_data) para REUSAR los datos actuales
+# (usuarios, espacios, reservas...). NO se crea uno nuevo vacío.
+#
+# Protección anti-llenado de disco: límite de logs en AMBOS servicios
+# (max-size 20m x max-file 5 = 100 MB máx. por contenedor). Esto evita que
+# se repita el incidente del json.log sin tope.
 
 services:
   db:
@@ -6,13 +17,52 @@ services:
     container_name: iuce-postgres
     environment:
       POSTGRES_USER: iuce
-      POSTGRES_PASSWORD: iuce2024
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD en .env}
       POSTGRES_DB: iuce_reservas
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    # Tope de RAM (blindaje anti-congelacion). Acotar tambien swap requiere
+    # memswap_limit + GRUB swapaccount=1 (pendiente, ventana de mantenimiento).
+    mem_limit: 1g
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+  app:
+    # Imagen ya construida con el fix de sharp. Para reconstruir:
+    #   docker-compose build   (re-etiqueta iuce-reservas_app:v1.0.1)
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: iuce-reservas_app:v1.0.1
+    container_name: iuce-app
+    depends_on:
+      - db
+    env_file:
+      - .env.local
+    environment:
+      - DATABASE_URL=postgresql://iuce:${POSTGRES_PASSWORD}@db:5432/iuce_reservas
+      - TZ=Europe/Madrid
+    ports:
+      - "3000:3000"
+    # Tope de RAM (blindaje anti-congelacion): la app NO puede comerse el host.
+    # Al excederlo, el cgroup mata el contenedor (OOMKilled) en vez de tumbar el SO.
+    # Acotar tambien swap: memswap_limit:2g + GRUB swapaccount=1 (pendiente).
+    mem_limit: 2g
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"
 
 volumes:
+  # Volumen EXTERNO: reutiliza los datos existentes. No lo crea ni lo borra.
   postgres_data:
+    external:
+      name: iuce-reservas_postgres_data

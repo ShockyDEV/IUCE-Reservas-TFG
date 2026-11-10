@@ -19,6 +19,8 @@ export async function GET() {
       lastLogin: true,
     },
     orderBy: [{ role: "asc" }, { name: "asc" }],
+    // Tope de seguridad: acota memoria del export (no cargar tabla ilimitada).
+    take: 50000,
   });
 
   const csv = usersToCsv(users);
