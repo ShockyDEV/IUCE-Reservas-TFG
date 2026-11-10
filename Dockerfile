@@ -4,10 +4,12 @@
 # --- Stage 1: Dependencies ---
 FROM node:20-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json* ./
+COPY package.json package-lock.json ./
 COPY prisma ./prisma
-RUN npm install --only=production && npm install sharp && cp -R node_modules /prod_modules
-RUN npm install
+# Versiones exactas del package-lock y sin scripts de instalación: lo único que
+# hacía falta de ellos (generar el cliente de Prisma) se lanza a mano en el build.
+RUN npm ci --omit=dev --ignore-scripts && cp -R node_modules /prod_modules
+RUN npm ci --ignore-scripts
 
 # --- Stage 2: Build ---
 FROM node:20-alpine AS builder
@@ -18,7 +20,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Variables NEXT_PUBLIC_* se hornean en el build → forzamos mock OFF y versión
 ENV NEXT_PUBLIC_USE_MOCK_AUTH=false
 ENV NEXT_PUBLIC_APP_VERSION=1.0.0
-RUN npx prisma generate
+RUN ./node_modules/.bin/prisma generate
 RUN npm run build
 
 # --- Stage 3: Production ---
@@ -34,6 +36,8 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 COPY --from=deps /prod_modules ./node_modules
+# Cliente de Prisma generado en el build (con su motor para Alpine).
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 RUN mkdir -p /app/.next/cache && chown -R nextjs:nodejs /app/.next/cache
 ENV TZ=Europe/Madrid
 # Tope de heap de Node (blindaje anti-congelacion por RAM): coherente con mem_limit 2g.
